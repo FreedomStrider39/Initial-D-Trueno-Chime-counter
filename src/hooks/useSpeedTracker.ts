@@ -4,15 +4,16 @@ import { useState, useEffect, useRef } from 'react';
 import { chime } from '@/utils/audio';
 import { showSuccess, showError } from '@/utils/toast';
 
-export const useSpeedTracker = (thresholdKmH: number = 105) => {
+export const useSpeedTracker = (thresholdKmH: number = 105, hysteresisLow: number = 100) => {
   const [speed, setSpeed] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isChiming, setIsChiming] = useState<boolean>(false);
   const watchId = useRef<number | null>(null);
 
   const startTracking = () => {
     if (!navigator.geolocation) {
-      showError("Geolocation is not supported by your browser");
+      showError("Geolocation is not supported");
       return;
     }
 
@@ -21,20 +22,23 @@ export const useSpeedTracker = (thresholdKmH: number = 105) => {
 
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
-        // speed is in m/s, convert to km/h
         const currentSpeedMs = position.coords.speed || 0;
         const currentSpeedKmH = Math.round(currentSpeedMs * 3.6);
         setSpeed(currentSpeedKmH);
 
+        // Hysteresis Logic
         if (currentSpeedKmH >= thresholdKmH) {
           chime.start();
-        } else {
+          setIsChiming(true);
+        } else if (currentSpeedKmH < hysteresisLow) {
           chime.stop();
+          setIsChiming(false);
         }
       },
       (err) => {
         setError(err.message);
-        showError("GPS Error: " + err.message);
+        // Don't show toast for every error to keep it "invisible"
+        console.error("GPS Error:", err.message);
       },
       {
         enableHighAccuracy: true,
@@ -51,6 +55,7 @@ export const useSpeedTracker = (thresholdKmH: number = 105) => {
     }
     setIsActive(false);
     setSpeed(0);
+    setIsChiming(false);
     chime.stop();
     showSuccess("Takumi Mode Deactivated");
   };
@@ -64,5 +69,5 @@ export const useSpeedTracker = (thresholdKmH: number = 105) => {
     };
   }, []);
 
-  return { speed, isActive, error, startTracking, stopTracking };
+  return { speed, isActive, isChiming, error, startTracking, stopTracking };
 };

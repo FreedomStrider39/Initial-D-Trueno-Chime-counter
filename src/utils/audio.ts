@@ -3,18 +3,20 @@
 class AE86Chime {
   private audio: HTMLAudioElement | null = null;
   private isPlaying: boolean = false;
+  private isMuted: boolean = false;
   private intervalId: number | null = null;
-  private readonly INTERVAL_MS = 1360; // 1.36 seconds
+  private readonly INTERVAL_MS = 1360; // 1.36 seconds (approx 44 BPM)
 
   constructor() {
     if (typeof window !== 'undefined') {
       this.audio = new Audio('/ae86_chime.mp3');
-      this.audio.loop = false; // We handle the timing manually for precision
+      // Set to ambient-like behavior for web
+      this.audio.preload = 'auto';
     }
   }
 
   private playChime() {
-    if (!this.audio) return;
+    if (!this.audio || this.isMuted) return;
     this.audio.currentTime = 0;
     this.audio.play().catch(err => {
       console.error("Audio playback failed:", err);
@@ -25,7 +27,6 @@ class AE86Chime {
     if (this.isPlaying || !this.audio) return;
     
     this.isPlaying = true;
-    // Play immediately then start interval
     this.playChime();
     this.intervalId = window.setInterval(() => {
       this.playChime();
@@ -45,6 +46,15 @@ class AE86Chime {
       this.audio.pause();
       this.audio.currentTime = 0;
     }
+  }
+
+  public toggleMute() {
+    this.isMuted = !this.isMuted;
+    return this.isMuted;
+  }
+
+  public getMuteStatus() {
+    return this.isMuted;
   }
 }
 

@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { Button } from '@/components/ui/button';
-import { Zap, AlertTriangle, Navigation, Car } from 'lucide-react';
+import { Zap, AlertTriangle, Navigation, Volume2, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { chime } from '@/utils/audio';
 import {
   Select,
   SelectContent,
@@ -14,8 +15,19 @@ import {
 } from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  const { speed, isActive, error, startTracking, stopTracking } = useSpeedTracker(105);
+  const { speed, isActive, isChiming, error, startTracking, stopTracking } = useSpeedTracker(105, 100);
   const [model, setModel] = useState("SPRINTER TRUENO AE86");
+  const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
+
+  // Auto-start on mount
+  useEffect(() => {
+    startTracking();
+  }, []);
+
+  const handleToggleMute = () => {
+    const newMuteStatus = chime.toggleMute();
+    setIsMuted(newMuteStatus);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-6 font-mono">
@@ -39,10 +51,15 @@ const AE86Dashboard = () => {
               </span>
             </div>
           </div>
-          <div className="text-right max-w-[150px]">
-            <span className="text-[10px] text-orange-500/50 uppercase tracking-widest">Model</span>
-            <div className="text-xs font-bold text-zinc-400 truncate uppercase">{model}</div>
-          </div>
+          
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleToggleMute}
+            className="text-zinc-500 hover:text-orange-500 hover:bg-orange-500/10"
+          >
+            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </Button>
         </div>
 
         {/* Main Speed Display */}
@@ -60,7 +77,7 @@ const AE86Dashboard = () => {
           <div className="flex items-baseline gap-2">
             <span className={cn(
               "text-8xl font-black tracking-tighter transition-all duration-200",
-              speed >= 105 ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]" : "text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)]"
+              isChiming ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]" : "text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)]"
             )}>
               {speed.toString().padStart(3, '0')}
             </span>
@@ -68,10 +85,13 @@ const AE86Dashboard = () => {
           </div>
 
           {/* Speed Warning Indicator */}
-          {speed >= 105 && (
-            <div className="mt-4 flex items-center gap-2 text-orange-500 animate-bounce">
-              <AlertTriangle size={16} />
-              <span className="text-xs font-bold tracking-widest">SPEED LIMIT EXCEEDED</span>
+          {isChiming && (
+            <div className="mt-4 flex flex-col items-center gap-1">
+              <div className="flex items-center gap-2 text-orange-500 animate-bounce">
+                <AlertTriangle size={16} />
+                <span className="text-xs font-bold tracking-widest">SPEED LIMIT EXCEEDED</span>
+              </div>
+              <span className="text-[8px] text-orange-500/50 uppercase">Hysteresis Active: Off at 100km/h</span>
             </div>
           )}
         </div>
@@ -83,8 +103,8 @@ const AE86Dashboard = () => {
             <span className="text-sm font-bold text-orange-500/80">105</span>
           </div>
           <div className="flex flex-col items-center">
-            <span className="text-[8px] text-zinc-600 uppercase mb-1">Mode</span>
-            <span className="text-sm font-bold text-green-500/80">TOUGE</span>
+            <span className="text-[8px] text-zinc-600 uppercase mb-1">Model</span>
+            <span className="text-[10px] font-bold text-zinc-400 truncate w-full text-center">{model.split(' ')[0]}</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-[8px] text-zinc-600 uppercase mb-1">GPS</span>
@@ -130,7 +150,7 @@ const AE86Dashboard = () => {
         )}
         
         <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed">
-          GPS errors in preview are normal. On mobile, ensure location permissions are granted.
+          Auto-start active. Chime triggers at 105km/h and stops at 100km/h.
         </p>
       </div>
     </div>
