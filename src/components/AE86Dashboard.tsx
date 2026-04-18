@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  // Updated threshold to 100 and hysteresis to 95
+  // Using the updated defaults: 100km/h limit, 95km/h off-speed
   const { speed, isActive, isChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
   const [model, setModel] = useState("SPRINTER TRUENO AE86");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());

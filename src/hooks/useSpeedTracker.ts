@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { chime } from '@/utils/audio';
 import { showSuccess, showError } from '@/utils/toast';
 
-export const useSpeedTracker = (thresholdKmH: number = 105, hysteresisLow: number = 100) => {
+export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: number = 95) => {
   const [speed, setSpeed] = useState<number>(0);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
