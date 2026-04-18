@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Navigation, Volume2, VolumeX, Power } from 'lucide-react';
@@ -18,11 +18,6 @@ const AE86Dashboard = () => {
   const { speed, isActive, isChiming, error, startTracking, stopTracking } = useSpeedTracker(105, 100);
   const [model, setModel] = useState("SPRINTER TRUENO AE86");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
-
-  // Auto-start on mount
-  useEffect(() => {
-    startTracking();
-  }, []);
 
   const handleToggleMute = () => {
     const newMuteStatus = chime.toggleMute();
@@ -169,7 +164,7 @@ const AE86Dashboard = () => {
         </div>
         
         <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed opacity-50">
-          Hold for 1s to emergency stop
+          Manual activation required to start tracking.
         </p>
       </div>
     </div>
