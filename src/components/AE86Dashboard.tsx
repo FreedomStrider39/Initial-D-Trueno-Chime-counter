@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  const { speed, isActive, isChiming, error, startTracking, stopTracking } = useSpeedTracker(105, 100);
+  // Updated threshold to 100 and hysteresis to 95
+  const { speed, isActive, isChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
   const [model, setModel] = useState("SPRINTER TRUENO AE86");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
   const [isEcoMode, setIsEcoMode] = useState(false);
@@ -120,7 +121,7 @@ const AE86Dashboard = () => {
         <div className="grid grid-cols-3 gap-4 mt-8 pt-6 border-t border-zinc-800/50">
           <div className="flex flex-col items-center">
             <span className="text-[8px] text-zinc-600 uppercase mb-1">Limit</span>
-            <span className="text-sm font-bold text-orange-500/80">105</span>
+            <span className="text-sm font-bold text-orange-500/80">100</span>
           </div>
           <div className="flex flex-col items-center">
             <span className="text-[8px] text-zinc-600 uppercase mb-1">Model</span>
