@@ -1,13 +1,21 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { Button } from '@/components/ui/button';
-import { Gauge, Zap, AlertTriangle, Navigation } from 'lucide-react';
+import { Zap, AlertTriangle, Navigation, Car } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  const { speed, isActive, startTracking, stopTracking } = useSpeedTracker(105);
+  const { speed, isActive, error, startTracking, stopTracking } = useSpeedTracker(105);
+  const [model, setModel] = useState("SPRINTER TRUENO AE86");
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-6 font-mono">
@@ -31,14 +39,20 @@ const AE86Dashboard = () => {
               </span>
             </div>
           </div>
-          <div className="text-right">
+          <div className="text-right max-w-[150px]">
             <span className="text-[10px] text-orange-500/50 uppercase tracking-widest">Model</span>
-            <div className="text-xs font-bold text-zinc-400">SPRINTER TRUENO AE86</div>
+            <div className="text-xs font-bold text-zinc-400 truncate uppercase">{model}</div>
           </div>
         </div>
 
         {/* Main Speed Display */}
         <div className="flex-1 flex flex-col items-center justify-center relative">
+          {error && !isActive && (
+            <div className="absolute top-0 text-[10px] text-red-500 bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
+              GPS: {error}
+            </div>
+          )}
+          
           <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-[10px] text-orange-500/30 uppercase tracking-[0.5em]">
             Velocity
           </div>
@@ -83,7 +97,21 @@ const AE86Dashboard = () => {
       </div>
 
       {/* Controls */}
-      <div className="mt-12 flex flex-col gap-4 w-full max-w-xs">
+      <div className="mt-8 flex flex-col gap-4 w-full max-w-xs">
+        <div className="space-y-2">
+          <label className="text-[10px] text-zinc-500 uppercase tracking-widest ml-1">Select Vehicle</label>
+          <Select onValueChange={setModel} defaultValue={model}>
+            <SelectTrigger className="bg-zinc-900 border-zinc-800 text-zinc-300 h-12 rounded-xl focus:ring-orange-500/50">
+              <SelectValue placeholder="Select Model" />
+            </SelectTrigger>
+            <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-300">
+              <SelectItem value="SPRINTER TRUENO AE86">AE86 TRUENO</SelectItem>
+              <SelectItem value="PEUGEOT 208">PEUGEOT 208</SelectItem>
+              <SelectItem value="VOLKSWAGEN SHARAN">VW SHARAN</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {!isActive ? (
           <Button 
             onClick={startTracking}
@@ -102,8 +130,7 @@ const AE86Dashboard = () => {
         )}
         
         <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed">
-          Keep this app running in the background while using Waze.<br/>
-          Chime will trigger automatically at 105 km/h.
+          GPS errors in preview are normal. On mobile, ensure location permissions are granted.
         </p>
       </div>
     </div>
