@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Navigation, Volume2, VolumeX, Power } from 'lucide-react';
+import { AlertTriangle, Navigation, Volume2, VolumeX, Power, BatteryLow } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import {
@@ -18,6 +18,7 @@ const AE86Dashboard = () => {
   const { speed, isActive, isChiming, error, startTracking, stopTracking } = useSpeedTracker(105, 100);
   const [model, setModel] = useState("SPRINTER TRUENO AE86");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
+  const [isEcoMode, setIsEcoMode] = useState(false);
 
   const handleToggleMute = () => {
     const newMuteStatus = chime.toggleMute();
@@ -25,9 +26,17 @@ const AE86Dashboard = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-950 p-6 font-mono">
+    <div className={cn(
+      "flex flex-col items-center justify-center min-h-screen transition-colors duration-1000 p-6 font-mono",
+      isEcoMode ? "bg-black" : "bg-zinc-950"
+    )}>
       {/* Retro Dashboard Container */}
-      <div className="relative w-full max-w-md aspect-[4/3] bg-zinc-900 border-4 border-zinc-800 rounded-xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col p-8">
+      <div className={cn(
+        "relative w-full max-w-md aspect-[4/3] border-4 rounded-xl overflow-hidden flex flex-col p-8 transition-all duration-500",
+        isEcoMode 
+          ? "bg-zinc-950 border-zinc-900 shadow-none opacity-40" 
+          : "bg-zinc-900 border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+      )}>
         
         {/* Header Info */}
         <div className="flex justify-between items-start mb-8">
@@ -35,8 +44,9 @@ const AE86Dashboard = () => {
             <span className="text-[10px] text-orange-500/50 uppercase tracking-widest">Vehicle Status</span>
             <div className="flex items-center gap-2">
               <div className={cn(
-                "w-2 h-2 rounded-full animate-pulse",
-                isActive ? "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]" : "bg-zinc-700"
+                "w-2 h-2 rounded-full",
+                isActive ? "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]" : "bg-zinc-700",
+                !isEcoMode && isActive && "animate-pulse"
               )} />
               <span className={cn(
                 "text-xs font-bold",
@@ -47,14 +57,27 @@ const AE86Dashboard = () => {
             </div>
           </div>
           
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleToggleMute}
-            className="text-zinc-500 hover:text-orange-500 hover:bg-orange-500/10"
-          >
-            {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsEcoMode(!isEcoMode)}
+              className={cn(
+                "transition-colors",
+                isEcoMode ? "text-green-500 bg-green-500/10" : "text-zinc-500 hover:text-green-500 hover:bg-green-500/10"
+              )}
+            >
+              <BatteryLow size={20} />
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleToggleMute}
+              className="text-zinc-500 hover:text-orange-500 hover:bg-orange-500/10"
+            >
+              {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+            </Button>
+          </div>
         </div>
 
         {/* Main Speed Display */}
@@ -72,7 +95,10 @@ const AE86Dashboard = () => {
           <div className="flex items-baseline gap-2">
             <span className={cn(
               "text-8xl font-black tracking-tighter transition-all duration-200",
-              isChiming ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]" : "text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)]"
+              isChiming 
+                ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]" 
+                : "text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)]",
+              isEcoMode && "drop-shadow-none"
             )}>
               {speed.toString().padStart(3, '0')}
             </span>
@@ -82,11 +108,10 @@ const AE86Dashboard = () => {
           {/* Speed Warning Indicator */}
           {isChiming && (
             <div className="mt-4 flex flex-col items-center gap-1">
-              <div className="flex items-center gap-2 text-orange-500 animate-bounce">
+              <div className={cn("flex items-center gap-2 text-orange-500", !isEcoMode && "animate-bounce")}>
                 <AlertTriangle size={16} />
                 <span className="text-xs font-bold tracking-widest">SPEED LIMIT EXCEEDED</span>
               </div>
-              <span className="text-[8px] text-orange-500/50 uppercase">Hysteresis Active: Off at 100km/h</span>
             </div>
           )}
         </div>
@@ -107,20 +132,27 @@ const AE86Dashboard = () => {
           </div>
         </div>
 
-        {/* Scanline Effect */}
-        <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,3px_100%]" />
+        {/* Scanline Effect - Disabled in Eco Mode */}
+        {!isEcoMode && (
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,3px_100%]" />
+        )}
       </div>
 
       {/* Controls */}
-      <div className="mt-12 flex flex-col items-center gap-8 w-full max-w-xs">
+      <div className={cn(
+        "mt-12 flex flex-col items-center gap-8 w-full max-w-xs transition-opacity duration-500",
+        isEcoMode ? "opacity-60" : "opacity-100"
+      )}>
         
         {/* Engine Start/Stop Button */}
         <div className="relative group">
           {/* Outer Ring Glow */}
-          <div className={cn(
-            "absolute -inset-4 rounded-full blur-xl transition-all duration-500 opacity-50",
-            isActive ? "bg-red-500/40" : "bg-green-500/20 group-hover:bg-green-500/40"
-          )} />
+          {!isEcoMode && (
+            <div className={cn(
+              "absolute -inset-4 rounded-full blur-xl transition-all duration-500 opacity-50",
+              isActive ? "bg-red-500/40" : "bg-green-500/20 group-hover:bg-green-500/40"
+            )} />
+          )}
           
           <button
             onClick={isActive ? stopTracking : startTracking}
@@ -128,7 +160,8 @@ const AE86Dashboard = () => {
               "relative w-32 h-32 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-90 shadow-2xl",
               isActive 
                 ? "bg-zinc-900 border-red-600 text-red-500 shadow-[inset_0_0_20px_rgba(220,38,38,0.3)]" 
-                : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-green-500 hover:text-green-500"
+                : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-green-500 hover:text-green-500",
+              isEcoMode && "shadow-none border-zinc-800"
             )}
           >
             <div className={cn(
@@ -136,16 +169,10 @@ const AE86Dashboard = () => {
               isActive ? "bg-gradient-to-b from-red-500/10 to-transparent" : "bg-gradient-to-b from-white/5 to-transparent"
             )} />
             
-            <Power size={24} className={cn("mb-1 transition-colors", isActive && "animate-pulse")} />
+            <Power size={24} className={cn("mb-1 transition-colors", isActive && !isEcoMode && "animate-pulse")} />
             <span className="text-[10px] font-black tracking-tighter leading-none">ENGINE</span>
             <span className="text-sm font-black tracking-widest leading-none">START</span>
             <span className="text-[10px] font-black tracking-tighter leading-none">STOP</span>
-            
-            {/* Status Light */}
-            <div className={cn(
-              "mt-2 w-1.5 h-1.5 rounded-full",
-              isActive ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" : "bg-zinc-800"
-            )} />
           </button>
         </div>
 
@@ -164,7 +191,7 @@ const AE86Dashboard = () => {
         </div>
         
         <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed opacity-50">
-          Manual activation required to start tracking.
+          {isEcoMode ? "Eco Mode: UI Throttled & Dimmed" : "Standard Mode: Full Visuals"}
         </p>
       </div>
     </div>

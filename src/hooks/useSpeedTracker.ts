@@ -10,6 +10,7 @@ export const useSpeedTracker = (thresholdKmH: number = 105, hysteresisLow: numbe
   const [error, setError] = useState<string | null>(null);
   const [isChiming, setIsChiming] = useState<boolean>(false);
   const watchId = useRef<number | null>(null);
+  const lastUpdateRef = useRef<number>(0);
 
   const startTracking = () => {
     if (!navigator.geolocation) {
@@ -22,28 +23,39 @@ export const useSpeedTracker = (thresholdKmH: number = 105, hysteresisLow: numbe
 
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
+        const now = Date.now();
+        // Throttle UI updates to 2Hz (every 500ms) to save battery, 
+        // but keep logic processing for the chime real-time
         const currentSpeedMs = position.coords.speed || 0;
         const currentSpeedKmH = Math.round(currentSpeedMs * 3.6);
-        setSpeed(currentSpeedKmH);
 
-        // Hysteresis Logic
+        // Logic processing (Must be real-time for safety/accuracy)
         if (currentSpeedKmH >= thresholdKmH) {
-          chime.start();
-          setIsChiming(true);
+          if (!isChiming) {
+            chime.start();
+            setIsChiming(true);
+          }
         } else if (currentSpeedKmH < hysteresisLow) {
-          chime.stop();
-          setIsChiming(false);
+          if (isChiming) {
+            chime.stop();
+            setIsChiming(false);
+          }
+        }
+
+        // UI Throttling
+        if (now - lastUpdateRef.current > 500) {
+          setSpeed(currentSpeedKmH);
+          lastUpdateRef.current = now;
         }
       },
       (err) => {
         setError(err.message);
-        // Don't show toast for every error to keep it "invisible"
         console.error("GPS Error:", err.message);
       },
       {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 5000
+        enableHighAccuracy: true, // Required for speed
+        maximumAge: 1000,         // Allow 1s old data to reduce GPS hardware wake-ups
+        timeout: 10000
       }
     );
   };
