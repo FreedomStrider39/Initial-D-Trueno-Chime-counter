@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { Button } from '@/components/ui/button';
-import { Zap, AlertTriangle, Navigation, Volume2, VolumeX } from 'lucide-react';
+import { AlertTriangle, Navigation, Volume2, VolumeX, Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import {
@@ -117,9 +117,45 @@ const AE86Dashboard = () => {
       </div>
 
       {/* Controls */}
-      <div className="mt-8 flex flex-col gap-4 w-full max-w-xs">
-        <div className="space-y-2">
-          <label className="text-[10px] text-zinc-500 uppercase tracking-widest ml-1">Select Vehicle</label>
+      <div className="mt-12 flex flex-col items-center gap-8 w-full max-w-xs">
+        
+        {/* Engine Start/Stop Button */}
+        <div className="relative group">
+          {/* Outer Ring Glow */}
+          <div className={cn(
+            "absolute -inset-4 rounded-full blur-xl transition-all duration-500 opacity-50",
+            isActive ? "bg-red-500/40" : "bg-green-500/20 group-hover:bg-green-500/40"
+          )} />
+          
+          <button
+            onClick={isActive ? stopTracking : startTracking}
+            className={cn(
+              "relative w-32 h-32 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-90 shadow-2xl",
+              isActive 
+                ? "bg-zinc-900 border-red-600 text-red-500 shadow-[inset_0_0_20px_rgba(220,38,38,0.3)]" 
+                : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-green-500 hover:text-green-500"
+            )}
+          >
+            <div className={cn(
+              "absolute inset-1 rounded-full border border-white/5 pointer-events-none",
+              isActive ? "bg-gradient-to-b from-red-500/10 to-transparent" : "bg-gradient-to-b from-white/5 to-transparent"
+            )} />
+            
+            <Power size={24} className={cn("mb-1 transition-colors", isActive && "animate-pulse")} />
+            <span className="text-[10px] font-black tracking-tighter leading-none">ENGINE</span>
+            <span className="text-sm font-black tracking-widest leading-none">START</span>
+            <span className="text-[10px] font-black tracking-tighter leading-none">STOP</span>
+            
+            {/* Status Light */}
+            <div className={cn(
+              "mt-2 w-1.5 h-1.5 rounded-full",
+              isActive ? "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)]" : "bg-zinc-800"
+            )} />
+          </button>
+        </div>
+
+        <div className="space-y-2 w-full">
+          <label className="text-[10px] text-zinc-500 uppercase tracking-widest ml-1">Vehicle Profile</label>
           <Select onValueChange={setModel} defaultValue={model}>
             <SelectTrigger className="bg-zinc-900 border-zinc-800 text-zinc-300 h-12 rounded-xl focus:ring-orange-500/50">
               <SelectValue placeholder="Select Model" />
@@ -131,26 +167,9 @@ const AE86Dashboard = () => {
             </SelectContent>
           </Select>
         </div>
-
-        {!isActive ? (
-          <Button 
-            onClick={startTracking}
-            className="h-16 bg-green-600 hover:bg-green-500 text-white font-bold rounded-2xl shadow-lg shadow-green-900/20 transition-all active:scale-95"
-          >
-            <Zap className="mr-2" /> START TAKUMI MODE
-          </Button>
-        ) : (
-          <Button 
-            onClick={stopTracking}
-            variant="destructive"
-            className="h-16 font-bold rounded-2xl shadow-lg shadow-red-900/20 transition-all active:scale-95"
-          >
-            DEACTIVATE
-          </Button>
-        )}
         
-        <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed">
-          Auto-start active. Chime triggers at 105km/h and stops at 100km/h.
+        <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed opacity-50">
+          Hold for 1s to emergency stop
         </p>
       </div>
     </div>
