@@ -2,18 +2,18 @@
   "name": "AE86 Speed Chime",
   "short_name": "AE86 Chime",
   "description": "Retro AE86 Speed Warning System",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
   "icons": [
     {
-      "src": "/placeholder.svg",
+      "src": "placeholder.svg",
       "sizes": "192x192",
       "type": "image/svg+xml"
     },
     {
-      "src": "/placeholder.svg",
+      "src": "placeholder.svg",
       "sizes": "512x512",
       "type": "image/svg+xml"
     }

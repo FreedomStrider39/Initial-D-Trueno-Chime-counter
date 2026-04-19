@@ -1,10 +1,10 @@
 const CACHE_NAME = 'ae86-chime-v1';
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/ae86_chime.mp3',
-  '/manifest.json',
-  '/placeholder.svg'
+  './',
+  'index.html',
+  'ae86_chime.mp3',
+  'manifest.json',
+  'placeholder.svg'
 ];
 
 self.addEventListener('install', (event) => {
