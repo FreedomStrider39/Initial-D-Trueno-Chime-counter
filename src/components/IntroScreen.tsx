@@ -33,6 +33,7 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
         "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
         isIgniting ? "scale-150 blur-sm" : "scale-100"
       )}>
+        {/* Using a placeholder or ensuring the path is relative to public if not imported */}
         <video 
           autoPlay 
           muted 
@@ -40,7 +41,7 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
           playsInline
           className="w-full h-full object-cover opacity-40 grayscale-[0.5] contrast-125"
         >
-          <source src="/src/assets/intro-video.mp4" type="video/mp4" />
+          <source src="intro-video.mp4" type="video/mp4" />
         </video>
         {/* Overlay Gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-80" />
