@@ -6,6 +6,7 @@ import { showSuccess, showError } from '@/utils/toast';
 
 export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: number = 95) => {
   const [speed, setSpeed] = useState<number>(0);
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isChiming, setIsChiming] = useState<boolean>(false);
@@ -43,6 +44,10 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
         // UI Throttling
         if (now - lastUpdateRef.current > 500) {
           setSpeed(currentSpeedKmH);
+          setCoords({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
           lastUpdateRef.current = now;
         }
       },
@@ -65,6 +70,7 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     }
     setIsActive(false);
     setSpeed(0);
+    setCoords(null);
     setIsChiming(false);
     chime.stop();
     showSuccess("Tracking Deactivated");
@@ -79,5 +85,5 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     };
   }, []);
 
-  return { speed, isActive, isChiming, error, startTracking, stopTracking };
+  return { speed, coords, isActive, isChiming, error, startTracking, stopTracking };
 };

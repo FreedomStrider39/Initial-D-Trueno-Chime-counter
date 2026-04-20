@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
+import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Navigation, Volume2, VolumeX, Power, BatteryLow, Beaker } from 'lucide-react';
+import { AlertTriangle, Navigation, Volume2, VolumeX, Power, BatteryLow, Beaker, Clock, Thermometer } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
@@ -16,16 +17,24 @@ import {
 } from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  const { speed: gpsSpeed, isActive, isChiming: gpsIsChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
+  const { speed: gpsSpeed, coords, isActive, isChiming: gpsIsChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
+  const { temp } = useWeather(coords?.latitude, coords?.longitude);
   
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
   const [isEcoMode, setIsEcoMode] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   // Simulation State
   const [isSimulating, setIsSimulating] = useState(false);
   const [simSpeed, setSimSpeed] = useState(0);
   const [simIsChiming, setSimIsChiming] = useState(false);
+
+  // Clock Logic
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleToggleMute = () => {
     const newMuteStatus = chime.toggleMute();
@@ -60,6 +69,10 @@ const AE86Dashboard = () => {
 
   // Calculate Tachometer (RPM) simulation based on speed
   const rpmPercent = Math.min((displaySpeed / 140) * 100, 100);
+
+  // Calculate Temp Gauge (0-40C range for visualization)
+  const displayTemp = temp ?? 20; // Default to 20 if loading
+  const tempPercent = Math.min(Math.max((displayTemp / 40) * 100, 0), 100);
 
   return (
     <div className={cn(
@@ -105,16 +118,19 @@ const AE86Dashboard = () => {
         {/* Middle Section: Speed & Indicators */}
         <div className="flex-1 flex items-center justify-between px-4 md:px-10">
           
-          {/* Left Side: Status Icons */}
+          {/* Left Side: Status Icons & Clock */}
           <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-center gap-1">
+              <Clock size={14} className="text-zinc-700" />
+              <span className="text-[10px] md:text-xs font-bold text-emerald-500/80 tabular-nums">
+                {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+              </span>
+            </div>
             <div className={cn("transition-colors", (isActive || isSimulating) ? "text-emerald-500" : "text-zinc-800")}>
               <Navigation size={20} className={cn((isActive || isSimulating) && !isEcoMode && "animate-pulse")} />
             </div>
             <div className={cn("transition-colors", isMuted ? "text-orange-500" : "text-zinc-800")}>
               <VolumeX size={20} />
-            </div>
-            <div className={cn("transition-colors", isEcoMode ? "text-emerald-500" : "text-zinc-800")}>
-              <BatteryLow size={20} />
             </div>
           </div>
 
@@ -137,7 +153,7 @@ const AE86Dashboard = () => {
             </div>
           </div>
 
-          {/* Right Side: Warning & Fuel (Decorative) */}
+          {/* Right Side: Warning & Temp Gauge */}
           <div className="flex flex-col items-end gap-2">
             <div className={cn(
               "w-12 h-8 border flex items-center justify-center transition-all duration-300",
@@ -145,15 +161,33 @@ const AE86Dashboard = () => {
             )}>
               <AlertTriangle size={18} className={isChiming ? "animate-pulse" : ""} />
             </div>
-            <div className="w-16 h-20 border border-zinc-800 p-1 flex flex-col justify-between">
-              <div className="text-[7px] text-zinc-600 text-center">FUEL</div>
+            
+            {/* Temperature Gauge */}
+            <div className="w-16 h-24 border border-zinc-800 p-1 flex flex-col justify-between relative">
+              <div className="text-[7px] text-zinc-600 text-center uppercase font-bold">Temp</div>
               <div className="flex-1 flex flex-col-reverse gap-[1px] mt-1">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className={cn("w-full h-full", i < 6 ? "bg-emerald-900/40" : "bg-zinc-900")} />
-                ))}
+                {Array.from({ length: 10 }).map((_, i) => {
+                  const isActiveBar = (i / 10) * 100 < tempPercent;
+                  const isHot = i > 7;
+                  return (
+                    <div 
+                      key={i} 
+                      className={cn(
+                        "w-full h-full transition-colors duration-500", 
+                        isActiveBar 
+                          ? (isHot ? "bg-orange-600" : "bg-emerald-600") 
+                          : "bg-zinc-900"
+                      )} 
+                    />
+                  );
+                })}
               </div>
-              <div className="flex justify-between text-[6px] text-zinc-700 mt-1">
-                <span>E</span><span>F</span>
+              <div className="flex justify-between text-[6px] text-zinc-700 mt-1 font-bold">
+                <span>C</span><span>H</span>
+              </div>
+              <div className="absolute -right-8 top-1/2 -translate-y-1/2 flex flex-col items-center">
+                <Thermometer size={10} className="text-zinc-700 mb-1" />
+                <span className="text-[8px] font-bold text-zinc-500">{temp !== null ? `${temp}°` : '--'}</span>
               </div>
             </div>
           </div>
