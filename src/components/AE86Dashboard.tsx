@@ -187,7 +187,6 @@ const AE86Dashboard = () => {
               <WarningLights 
                 isChiming={isChiming} 
                 hasError={!!error} 
-                isActive={isActive}
                 isMuted={isMuted}
               />
             </div>

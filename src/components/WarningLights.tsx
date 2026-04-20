@@ -6,11 +6,10 @@ import { cn } from '@/lib/utils';
 interface WarningLightsProps {
   isChiming: boolean;
   hasError: boolean;
-  isActive: boolean;
   isMuted: boolean;
 }
 
-const WarningLights = ({ isChiming, hasError, isActive, isMuted }: WarningLightsProps) => {
+const WarningLights = ({ isChiming, hasError, isMuted }: WarningLightsProps) => {
   const indicators = [
     { 
       id: 'speed', 
@@ -22,12 +21,6 @@ const WarningLights = ({ isChiming, hasError, isActive, isMuted }: WarningLights
       id: 'gps', 
       label: 'GPS ERR',
       active: hasError, 
-      color: 'bg-[#ff8000]', 
-    },
-    { 
-      id: 'ign', 
-      label: 'IGNITION',
-      active: isActive, 
       color: 'bg-[#ff8000]', 
     },
     { 
