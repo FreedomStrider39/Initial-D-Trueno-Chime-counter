@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import introVideo from '@/assets/intro-video.mp4';
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -16,105 +15,124 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
   const handleStart = () => {
     setIsIgniting(true);
     
-    // Sequence: Shake -> Flash -> Exit
+    // Sequence: Intensifying shake -> Flash -> Warp Exit
     setTimeout(() => {
       setIsExiting(true);
-      setTimeout(onStart, 800);
-    }, 400);
+      setTimeout(onStart, 1000);
+    }, 800);
   };
 
   return (
     <div className={cn(
       "fixed inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950 transition-all duration-1000 ease-in-out overflow-hidden",
-      isExiting ? "opacity-0 scale-[2] pointer-events-none" : "opacity-100 scale-100",
-      isIgniting && !isExiting && "animate-[shake_0.4s_infinite]"
+      isExiting ? "opacity-0 scale-[3] blur-2xl pointer-events-none" : "opacity-100 scale-100",
     )}>
       {/* Background Video Container */}
       <div className={cn(
-        "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
-        isIgniting ? "scale-150 blur-sm" : "scale-100"
+        "absolute inset-0 w-full h-full overflow-hidden transition-all duration-1000 ease-in",
+        isIgniting ? "scale-[2] blur-md rotate-1" : "scale-105"
       )}>
         <video 
           autoPlay 
           muted 
           loop 
           playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2] contrast-125"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale-[0.5] contrast-150"
         >
-          <source src={introVideo} type="video/mp4" />
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-night-city-traffic-in-the-rain-3134-large.mp4" type="video/mp4" />
         </video>
         
-        {/* Overlay Gradients for depth */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-90" />
-        <div className="absolute inset-0 bg-zinc-950/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/50 to-zinc-950 opacity-90" />
       </div>
       
-      {/* White Flash Overlay */}
-      <div className={cn(
-        "absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-300",
-        isIgniting ? "opacity-40" : "opacity-0"
-      )} />
-
+      {/* Engine Vibration Effect */}
       <div className={cn(
         "relative flex flex-col items-center w-full max-w-2xl px-6 transition-all duration-500",
-        isIgniting ? "scale-90 opacity-50 blur-md" : "scale-100 opacity-100"
+        isIgniting && "animate-[engine-vibrate_0.1s_infinite]"
       )}>
         
         {/* Title Section */}
-        <div className="text-center space-y-2 mb-12 md:mb-16">
-          <h1 className="text-zinc-300 text-[10px] md:text-[12px] tracking-[0.6em] md:tracking-[0.8em] uppercase font-mono drop-shadow-2xl font-bold">
-            Retro Speed Warning System
-          </h1>
-          <h2 className="text-white text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter font-mono italic drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
+        <div className="text-center space-y-4 mb-16">
+          <div className="inline-block px-3 py-1 border border-orange-500/30 rounded-full bg-orange-500/5 mb-4">
+            <span className="text-orange-500 text-[10px] tracking-[0.5em] uppercase font-black">
+              System Ready
+            </span>
+          </div>
+          <h2 className="text-white text-5xl sm:text-7xl font-black tracking-tighter font-mono italic drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
             TOYOTA <span className="text-orange-500">CHIME</span>
           </h2>
+          <p className="text-zinc-500 text-[10px] tracking-[0.4em] uppercase font-bold">
+            Precision Speed Monitoring
+          </p>
         </div>
 
         {/* Start Button */}
         <button
           onClick={handleStart}
           disabled={isIgniting}
-          className="group relative flex flex-col items-center gap-4 transition-all duration-300 active:scale-95"
+          className="group relative flex flex-col items-center gap-6 transition-all duration-300 active:scale-90"
         >
           <div className="relative">
+            {/* Outer Glows */}
             <div className={cn(
-              "absolute -inset-6 md:-inset-8 rounded-full blur-3xl transition-all duration-300",
-              isIgniting ? "bg-orange-500 opacity-100 scale-150" : "bg-orange-500/30 opacity-100 group-hover:bg-orange-500/50"
+              "absolute -inset-12 rounded-full blur-3xl transition-all duration-700",
+              isIgniting ? "bg-orange-500 opacity-100 scale-150 animate-pulse" : "bg-orange-500/20 opacity-0 group-hover:opacity-100"
             )} />
+            
             <div className={cn(
-              "relative w-24 h-24 md:w-28 md:h-28 rounded-full border-2 flex items-center justify-center bg-zinc-900/90 backdrop-blur-md transition-all duration-300",
-              isIgniting ? "border-orange-500 scale-110" : "border-zinc-600 group-hover:border-orange-500/70"
+              "relative w-28 h-28 md:w-32 md:h-32 rounded-full border-2 flex items-center justify-center bg-zinc-900/80 backdrop-blur-xl transition-all duration-500",
+              isIgniting ? "border-orange-500 shadow-[0_0_50px_rgba(249,115,22,0.5)]" : "border-zinc-800 group-hover:border-orange-500/50"
             )}>
               <Power className={cn(
-                "transition-all duration-300",
-                isIgniting ? "text-orange-500 scale-125" : "text-zinc-400 group-hover:text-orange-500"
-              )} size={40} />
+                "transition-all duration-500",
+                isIgniting ? "text-orange-500 scale-125 rotate-12" : "text-zinc-600 group-hover:text-orange-500"
+              )} size={48} />
+              
+              {/* Circular Progress Ring */}
+              <svg className="absolute inset-0 w-full h-full -rotate-90">
+                <circle
+                  cx="50%"
+                  cy="50%"
+                  r="48%"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeDasharray="100 100"
+                  className={cn(
+                    "text-orange-500/20 transition-all duration-1000",
+                    isIgniting ? "stroke-dashoffset-0" : "stroke-dashoffset-100"
+                  )}
+                />
+              </svg>
             </div>
           </div>
-          <span className={cn(
-            "text-[12px] md:text-[14px] font-mono tracking-[0.4em] uppercase transition-all duration-300 font-black",
-            isIgniting ? "text-orange-500 translate-y-2" : "text-zinc-300 group-hover:text-white"
-          )}>
-            {isIgniting ? "IGNITING..." : "Ignition"}
-          </span>
+          
+          <div className="flex flex-col items-center gap-1">
+            <span className={cn(
+              "text-[12px] font-mono tracking-[0.6em] uppercase transition-all duration-500 font-black",
+              isIgniting ? "text-orange-500 translate-y-2" : "text-zinc-400 group-hover:text-white"
+            )}>
+              {isIgniting ? "CRANKING..." : "Ignition"}
+            </span>
+            {!isIgniting && (
+              <span className="text-[8px] text-zinc-600 tracking-widest uppercase animate-pulse">
+                Press to start engine
+              </span>
+            )}
+          </div>
         </button>
       </div>
 
-      {/* Bottom Branding */}
-      <div className="absolute bottom-8 md:bottom-12 text-[10px] md:text-[12px] text-zinc-400 font-mono tracking-[0.4em] md:tracking-[0.6em] uppercase text-center px-4 font-bold">
-        Fujiwara Tofu Shop (Private Use)
-      </div>
-
       {/* Scanline Effect Overlay */}
-      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-30" />
+      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-20" />
 
       <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes shake {
-          0% { transform: translate(0, 0); }
-          25% { transform: translate(3px, -3px); }
-          50% { transform: translate(-3px, 3px); }
-          75% { transform: translate(3px, 3px); }
-          100% { transform: translate(0, 0); }
+        @keyframes engine-vibrate {
+          0% { transform: translate(0, 0) rotate(0deg); }
+          25% { transform: translate(2px, -2px) rotate(0.5deg); }
+          50% { transform: translate(-2px, 2px) rotate(-0.5deg); }
+          75% { transform: translate(2px, 2px) rotate(0.5deg); }
+          100% { transform: translate(0, 0) rotate(0deg); }
         }
       `}} />
     </div>
