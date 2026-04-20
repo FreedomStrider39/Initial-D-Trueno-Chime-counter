@@ -93,36 +93,74 @@ const AE86Dashboard = () => {
         {/* Main Display Area */}
         <div className="relative flex-1 flex flex-col border-2 border-zinc-800/30 p-4 md:p-6">
           
-          {/* Top: Sweeping Tachometer Bar */}
-          <div className="relative w-full h-20 md:h-24 mb-8">
-            <div className="absolute top-0 left-0 text-[10px] text-zinc-600 font-black uppercase tracking-[0.2em]">x1000r/min</div>
-            <div className="flex items-end h-full w-full gap-[2px] px-2">
-              {Array.from({ length: 60 }).map((_, i) => {
-                const isActive = (i / 60) * 100 < rpmPercent;
-                const isRedline = i > 48;
-                // Calculate height for the "sweep" effect
-                const height = 20 + (i * 1.2);
+          {/* Top Section: Curved Tachometer */}
+          <div className="relative w-full h-40 md:h-48 mb-4">
+            <svg viewBox="0 0 800 200" className="w-full h-full overflow-visible">
+              {/* Tachometer Background Arc */}
+              <path 
+                d="M 50 180 Q 150 50 400 50 Q 650 50 750 180" 
+                fill="none" 
+                stroke="#1a1a1a" 
+                strokeWidth="16" 
+                strokeLinecap="round"
+              />
+              
+              {/* Tachometer Active Segments (Simulated with dasharray) */}
+              <path 
+                d="M 50 180 Q 150 50 400 50 Q 650 50 750 180" 
+                fill="none" 
+                stroke={rpmPercent > 85 ? "#ea580c" : "#10b981"} 
+                strokeWidth="16" 
+                strokeLinecap="round"
+                strokeDasharray="1000"
+                strokeDashoffset={1000 - (rpmPercent * 10)}
+                className="transition-all duration-300 ease-out"
+                style={{ filter: rpmPercent > 85 ? 'drop-shadow(0 0 12px #ea580c)' : 'drop-shadow(0 0 12px #10b981)' }}
+              />
+
+              {/* Tachometer Numbers */}
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((num) => {
+                const adjX = [50, 120, 210, 310, 400, 490, 590, 680, 750][num];
+                const adjY = [195, 140, 95, 70, 65, 70, 95, 140, 195][num];
                 return (
-                  <div 
-                    key={i}
-                    className={cn(
-                      "flex-1 transition-all duration-150 rounded-t-sm",
-                      isActive 
-                        ? (isRedline ? "bg-orange-600 shadow-[0_0_10px_rgba(234,88,12,0.8)]" : "bg-[#10b981] shadow-[0_0_10px_rgba(16,185,129,0.8)]")
-                        : "bg-zinc-900/40"
-                    )}
-                    style={{ height: `${height}%` }}
-                  />
+                  <text 
+                    key={num} 
+                    x={adjX} 
+                    y={adjY} 
+                    fill={num >= 7 ? "#991b1b" : "#444"} 
+                    fontSize="18" 
+                    fontWeight="900" 
+                    textAnchor="middle"
+                    className="font-sans italic"
+                  >
+                    {num}
+                  </text>
                 );
               })}
-            </div>
-            <div className="absolute bottom-[-20px] w-full flex justify-between px-4 text-[12px] text-zinc-700 font-black italic">
-              <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span className="text-orange-900">7</span><span className="text-orange-900">8</span>
+              
+              <text x="180" y="180" fill="#333" fontSize="12" fontWeight="bold" className="uppercase tracking-[0.2em]">
+                TACH x100r/min
+              </text>
+            </svg>
+
+            {/* Speed Electronic Display Box (Positioned inside the arc) */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 bg-zinc-900/60 border-4 border-zinc-800 p-4 md:p-6 rounded-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] min-w-[200px] flex flex-col items-center">
+              <div className="absolute top-1 left-2 text-[8px] text-zinc-600 font-black uppercase tracking-widest">SPEED</div>
+              <div className="flex items-baseline">
+                <span className={cn(
+                  "text-7xl md:text-8xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
+                  isChiming ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]" : "text-[#10b981] drop-shadow-[0_0_20px_rgba(16,185,129,0.6)]"
+                )}>
+                  {displaySpeed}
+                </span>
+                <span className="text-xl md:text-2xl font-black text-zinc-700 ml-2 italic">km/h</span>
+              </div>
+              <div className="mt-2 text-[8px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
             </div>
           </div>
 
-          {/* Middle: Speed, Fuel, Temp */}
-          <div className="flex-1 flex items-center justify-between">
+          {/* Middle: Side Gauges */}
+          <div className="flex-1 flex items-center justify-between px-4">
             
             {/* Left: Fuel Gauge */}
             <div className="flex flex-col items-center gap-2 w-16">
@@ -140,29 +178,6 @@ const AE86Dashboard = () => {
               </div>
               <div className="flex justify-between w-full text-[8px] text-zinc-700 font-black px-2">
                 <span>E</span><span>F</span>
-              </div>
-            </div>
-
-            {/* Center: Speedometer Box */}
-            <div className="relative flex flex-col items-center">
-              <div className="bg-zinc-900/20 border-4 border-zinc-800 p-8 md:p-12 rounded-sm shadow-[inset_0_0_40px_rgba(0,0,0,0.8)] min-w-[300px] flex flex-col items-center">
-                <div className="absolute top-2 left-4 text-[10px] text-zinc-600 font-black uppercase tracking-[0.4em]">SPEED</div>
-                <div className="flex items-baseline">
-                  <span className={cn(
-                    "text-9xl md:text-[11rem] font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
-                    isChiming ? "text-orange-500 drop-shadow-[0_0_30px_rgba(249,115,22,0.7)]" : "text-[#10b981] drop-shadow-[0_0_30px_rgba(16,185,129,0.6)]"
-                  )}>
-                    {displaySpeed.toString().padStart(3, '0')}
-                  </span>
-                  <span className="text-2xl md:text-4xl font-black text-zinc-700 ml-4 italic">km/h</span>
-                </div>
-              </div>
-              
-              {/* Digital Clock Integrated Below Speed */}
-              <div className="mt-6 bg-zinc-900/40 border-2 border-zinc-800 px-6 py-2 rounded-sm">
-                <span className="text-2xl font-black text-[#10b981]/90 tabular-nums tracking-[0.2em]">
-                  {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}
-                </span>
               </div>
             </div>
 
@@ -191,50 +206,40 @@ const AE86Dashboard = () => {
             </div>
           </div>
 
-          {/* Bottom: Warning Lights Row */}
-          <div className="mt-10 flex justify-center gap-6 md:gap-12 border-t-2 border-zinc-800/30 pt-8">
-            <div className={cn("flex flex-col items-center gap-2 transition-colors", isChiming ? "text-orange-600" : "text-zinc-900")}>
-              <AlertTriangle size={24} className={isChiming ? "animate-pulse" : ""} />
-              <span className="text-[8px] font-black uppercase tracking-widest">Warning</span>
+          {/* Bottom: Warning Lights Row (Errors) */}
+          <div className="mt-6 flex justify-end gap-4 md:gap-8 border-t border-zinc-800/30 pt-4">
+            <div className={cn("flex flex-col items-center gap-1 transition-colors", isChiming ? "text-orange-600" : "text-zinc-900")}>
+              <AlertTriangle size={20} className={isChiming ? "animate-pulse" : ""} />
+              <span className="text-[7px] font-black uppercase">Brake</span>
             </div>
-            <div className={cn("flex flex-col items-center gap-2 transition-colors", (isActive || isSimulating) ? "text-[#10b981]" : "text-zinc-900")}>
-              <Navigation size={24} />
-              <span className="text-[8px] font-black uppercase tracking-widest">GPS Link</span>
+            <div className="flex flex-col items-center gap-1 text-zinc-900">
+              <Zap size={20} />
+              <span className="text-[7px] font-black uppercase">Charge</span>
             </div>
-            <div className={cn("flex flex-col items-center gap-2 transition-colors", isMuted ? "text-orange-600" : "text-zinc-900")}>
-              <VolumeX size={24} />
-              <span className="text-[8px] font-black uppercase tracking-widest">Mute</span>
+            <div className="flex flex-col items-center gap-1 text-zinc-900">
+              <Droplets size={20} />
+              <span className="text-[7px] font-black uppercase">Oil</span>
             </div>
-            <div className={cn("flex flex-col items-center gap-2 transition-colors", isEcoMode ? "text-[#10b981]" : "text-zinc-900")}>
-              <Zap size={24} />
-              <span className="text-[8px] font-black uppercase tracking-widest">Eco</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 text-zinc-900">
-              <Droplets size={24} />
-              <span className="text-[8px] font-black uppercase tracking-widest">Oil</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 text-zinc-900">
-              <Info size={24} />
-              <span className="text-[8px] font-black uppercase tracking-widest">Check</span>
+            <div className="flex flex-col items-center gap-1 text-zinc-900">
+              <Info size={20} />
+              <span className="text-[7px] font-black uppercase">Check</span>
             </div>
           </div>
 
-          {/* Branding & Odometer */}
-          <div className="mt-8 flex justify-between items-end px-4">
+          {/* Odometer & Branding */}
+          <div className="mt-4 flex justify-between items-end px-4">
             <div className="flex flex-col gap-1">
-              <div className="text-[10px] text-zinc-600 font-black tracking-[0.4em] uppercase">Toyota Motor Corp.</div>
               <div className="bg-black border-2 border-zinc-800 px-4 py-1 flex gap-2">
-                {["0", "8", "6", "1", "0", ".", "1"].map((digit, i) => (
+                {["0", "3", "0", "4", "0", "9"].map((digit, i) => (
                   <span key={i} className="text-sm font-black text-zinc-400 tabular-nums bg-zinc-900 px-1 rounded-sm">{digit}</span>
                 ))}
                 <span className="text-[10px] text-zinc-600 self-end ml-1 font-black">km</span>
               </div>
             </div>
             <div className="text-right">
-              <div className="text-xl md:text-2xl text-zinc-500 font-black tracking-[0.3em] italic">
+              <div className="text-lg md:text-xl text-zinc-600 font-black tracking-[0.3em] italic">
                 {model} <span className="text-zinc-800 ml-2">GT-APEX</span>
               </div>
-              <div className="text-[10px] text-zinc-700 font-black tracking-[0.6em] uppercase mt-1">Twin Cam 16 Valve</div>
             </div>
           </div>
         </div>
