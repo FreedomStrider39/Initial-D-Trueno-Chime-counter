@@ -1,8 +1,8 @@
 {
-  "name": "Toyota Speed Chime",
-  "short_name": "Toyota Chime",
-  "description": "Retro Toyota Speed Warning System",
-  "start_url": "/",
+  "name": "Retro toyota Dash",
+  "short_name": "Toyota Retro Dash",
+  "description": "A virtual  toyota fashboard with chimes and speedometer. includes trip meter and live weather",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#09090b",
   "theme_color": "#09090b",
@@ -18,11 +18,5 @@
       "type": "image/svg+xml"
     }
   ],
-  "categories": [
-    "travel",
-    "utilities"
-  ],
-  "scope": "/",
-  "lang": "en",
-  "orientation": "portrait"
+  "id": "TRD"
 }
