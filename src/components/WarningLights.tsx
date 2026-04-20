@@ -78,17 +78,6 @@ const WarningLights = ({ isChiming, hasError }: WarningLightsProps) => {
           </span>
         </div>
       ))}
-      
-      {/* Bottom Car Silhouette Section */}
-      <div className="h-12 flex items-center justify-center border-t-2 border-zinc-900 bg-zinc-950">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor" className={cn(
-          "transition-all duration-300",
-          isChiming ? "text-orange-500 drop-shadow(0 0 10px rgba(249,115,22,0.6))" : "text-zinc-900/40"
-        )}>
-          <path d="M6 18h12v-2h-12v2zm12-4l-2-6h-8l-2 6h12zm-10-5h8l1 3h-10l1-3z" />
-          <path d="M19 14v2h2v-2h-2z" className={isChiming ? "animate-pulse" : ""} />
-        </svg>
-      </div>
     </div>
   );
 };
