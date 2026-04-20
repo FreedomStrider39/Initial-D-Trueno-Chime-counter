@@ -21,43 +21,11 @@ const AE86Dashboard = () => {
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
   const [isEcoMode, setIsEcoMode] = useState(false);
-  const [isPoweringOn, setIsPoweringOn] = useState(true);
-  const [sweepSpeed, setSweepSpeed] = useState(0);
   
   // Simulation State
   const [isSimulating, setIsSimulating] = useState(false);
   const [simSpeed, setSimSpeed] = useState(0);
   const [simIsChiming, setSimIsChiming] = useState(false);
-
-  // Power-on Sequence (Gauge Sweep)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      // Sweep up
-      let current = 0;
-      const upInterval = setInterval(() => {
-        current += 8;
-        if (current >= 188) {
-          current = 188;
-          clearInterval(upInterval);
-          // Sweep down
-          setTimeout(() => {
-            const downInterval = setInterval(() => {
-              current -= 12;
-              if (current <= 0) {
-                current = 0;
-                clearInterval(downInterval);
-                setIsPoweringOn(false);
-              }
-              setSweepSpeed(current);
-            }, 20);
-          }, 200);
-        }
-        setSweepSpeed(current);
-      }, 20);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleToggleMute = () => {
     const newMuteStatus = chime.toggleMute();
@@ -87,7 +55,7 @@ const AE86Dashboard = () => {
     }
   }, [simSpeed, isSimulating, simIsChiming]);
 
-  const displaySpeed = isPoweringOn ? sweepSpeed : (isSimulating ? simSpeed : gpsSpeed);
+  const displaySpeed = isSimulating ? simSpeed : gpsSpeed;
   const isChiming = isSimulating ? simIsChiming : gpsIsChiming;
 
   return (
@@ -97,18 +65,14 @@ const AE86Dashboard = () => {
     )}>
       {/* Retro Dashboard Container */}
       <div className={cn(
-        "relative w-full max-w-lg aspect-square md:aspect-[4/3] border-4 rounded-2xl overflow-hidden flex flex-col p-6 md:p-10 transition-all duration-700",
+        "relative w-full max-w-lg aspect-square md:aspect-[4/3] border-4 rounded-2xl overflow-hidden flex flex-col p-6 md:p-10 transition-all duration-500",
         isEcoMode 
           ? "bg-zinc-950 border-zinc-900 shadow-none opacity-40" 
-          : "bg-zinc-900 border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]",
-        isPoweringOn ? "scale-95 opacity-0 translate-y-4" : "scale-100 opacity-100 translate-y-0"
+          : "bg-zinc-900 border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
       )}>
         
         {/* Header Info */}
-        <div className={cn(
-          "flex justify-between items-start mb-6 md:mb-10 transition-all duration-500 delay-300",
-          isPoweringOn ? "opacity-0 -translate-y-2" : "opacity-100 translate-y-0"
-        )}>
+        <div className="flex justify-between items-start mb-6 md:mb-10">
           <div className="flex flex-col">
             <span className="text-[10px] text-orange-500/50 uppercase tracking-widest">Vehicle Status</span>
             <div className="flex items-center gap-2">
@@ -168,10 +132,7 @@ const AE86Dashboard = () => {
             </div>
           )}
           
-          <div className={cn(
-            "absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-orange-500/30 uppercase tracking-[0.5em] transition-opacity duration-500 delay-500",
-            isPoweringOn ? "opacity-0" : "opacity-100"
-          )}>
+          <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-orange-500/30 uppercase tracking-[0.5em]">
             Velocity
           </div>
           
@@ -181,8 +142,7 @@ const AE86Dashboard = () => {
               isChiming 
                 ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]" 
                 : "text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)]",
-              isEcoMode && "drop-shadow-none",
-              isPoweringOn && "text-zinc-800 drop-shadow-none"
+              isEcoMode && "drop-shadow-none"
             )}>
               {displaySpeed.toString().padStart(3, '0')}
             </span>
@@ -201,10 +161,7 @@ const AE86Dashboard = () => {
         </div>
 
         {/* Bottom Stats */}
-        <div className={cn(
-          "grid grid-cols-3 gap-2 md:gap-4 mt-6 md:mt-10 pt-6 border-t border-zinc-800/50 transition-all duration-500 delay-700",
-          isPoweringOn ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
-        )}>
+        <div className="grid grid-cols-3 gap-2 md:gap-4 mt-6 md:mt-10 pt-6 border-t border-zinc-800/50">
           <div className="flex flex-col items-center">
             <span className="text-[8px] text-zinc-600 uppercase mb-1">Limit</span>
             <span className="text-xs md:text-sm font-bold text-orange-500/80">100</span>
@@ -227,8 +184,8 @@ const AE86Dashboard = () => {
 
       {/* Controls */}
       <div className={cn(
-        "mt-8 md:mt-12 flex flex-col items-center gap-6 md:gap-8 w-full max-w-xs transition-all duration-1000 delay-1000",
-        (isEcoMode || isPoweringOn) ? "opacity-0" : "opacity-100"
+        "mt-8 md:mt-12 flex flex-col items-center gap-6 md:gap-8 w-full max-w-xs transition-opacity duration-500",
+        isEcoMode ? "opacity-60" : "opacity-100"
       )}>
         
         {isSimulating ? (
