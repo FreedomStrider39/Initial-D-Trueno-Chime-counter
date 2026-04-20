@@ -63,9 +63,6 @@ const AE86Dashboard = () => {
   // Calculate Tachometer (RPM) simulation based on speed
   const rpmPercent = Math.min((displaySpeed / 140) * 100, 100);
   
-  // Calculate Speed Arc Percent (0-140 km/h range)
-  const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
-
   // Calculate Temp Gauge (0-40C range for visualization)
   const displayTemp = temp ?? 20; 
   const tempPercent = Math.min(Math.max((displayTemp / 40) * 100, 0), 100);
@@ -139,54 +136,9 @@ const AE86Dashboard = () => {
               </text>
             </svg>
 
-            {/* Speed Electronic Display & Speed Arc */}
+            {/* Speed Electronic Display */}
             <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
-              
-              {/* Speed Arc SVG */}
-              <svg width="300" height="150" viewBox="0 0 300 150" className="absolute -top-8 overflow-visible">
-                {/* Background Arc */}
-                <path 
-                  d="M 40 130 A 110 110 0 0 1 260 130" 
-                  fill="none" 
-                  stroke="#1a1a1a" 
-                  strokeWidth="10" 
-                  strokeLinecap="round"
-                />
-                {/* Active Speed Arc */}
-                <path 
-                  d="M 40 130 A 110 110 0 0 1 260 130" 
-                  fill="none" 
-                  stroke={isChiming ? "#ea580c" : "#10b981"} 
-                  strokeWidth="10" 
-                  strokeLinecap="round"
-                  strokeDasharray="400"
-                  strokeDashoffset={400 - (speedPercent * 3.8)}
-                  className="transition-all duration-200 ease-out"
-                  style={{ filter: isChiming ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
-                />
-                {/* Speed Scale Markers */}
-                {[0, 20, 40, 60, 80, 100, 120, 140].map((val, i) => {
-                  const angle = (i / 7) * Math.PI;
-                  const x = 150 - Math.cos(angle) * 135;
-                  const y = 130 - Math.sin(angle) * 135;
-                  return (
-                    <text 
-                      key={val} 
-                      x={x} 
-                      y={y} 
-                      fill="#333" 
-                      fontSize="9" 
-                      fontWeight="bold" 
-                      textAnchor="middle"
-                    >
-                      {val}
-                    </text>
-                  );
-                })}
-              </svg>
-
-              {/* Speed Readout (No Box) */}
-              <div className="flex flex-col items-center mt-4">
+              <div className="flex flex-col items-center">
                 <div className="flex items-baseline">
                   <span className={cn(
                     "text-7xl md:text-8xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
