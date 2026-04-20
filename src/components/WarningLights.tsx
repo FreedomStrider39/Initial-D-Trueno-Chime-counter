@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { AlertTriangle, WifiOff, Zap, Beaker } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface WarningLightsProps {
@@ -9,72 +10,65 @@ interface WarningLightsProps {
 }
 
 const WarningLights = ({ isChiming, hasError }: WarningLightsProps) => {
-  const lights = [
+  const indicators = [
     { 
       id: 'speed', 
-      label: 'SPEED', 
+      icon: AlertTriangle, 
       active: isChiming, 
       color: 'text-orange-500', 
       bg: 'bg-orange-950/40',
-      border: 'border-orange-500/50',
-      glow: 'shadow-[0_0_15px_rgba(249,115,22,0.5)]'
+      border: 'border-orange-600/50',
+      glow: 'shadow-[0_0_15px_rgba(249,115,22,0.6)]'
     },
     { 
       id: 'gps', 
-      label: 'GPS ERR', 
+      icon: WifiOff, 
       active: hasError, 
       color: 'text-red-500', 
       bg: 'bg-red-950/40',
-      border: 'border-red-500/50',
-      glow: 'shadow-[0_0_15px_rgba(239,68,68,0.5)]'
+      border: 'border-red-600/50',
+      glow: 'shadow-[0_0_15px_rgba(239,68,68,0.6)]'
     },
     { 
       id: 'batt', 
-      label: 'BATT', 
+      icon: Zap, 
       active: false, 
       color: 'text-red-500', 
       bg: 'bg-red-950/40',
-      border: 'border-red-500/50',
+      border: 'border-red-600/50',
       glow: ''
     },
     { 
       id: 'fluid', 
-      label: 'FLUID', 
+      icon: Beaker, 
       active: false, 
       color: 'text-orange-500', 
       bg: 'bg-orange-950/40',
-      border: 'border-orange-500/50',
-      glow: ''
-    },
-    { 
-      id: 'brake', 
-      label: 'BRAKE', 
-      active: false, 
-      color: 'text-red-500', 
-      bg: 'bg-red-950/40',
-      border: 'border-red-500/50',
+      border: 'border-orange-600/50',
       glow: ''
     },
   ];
 
   return (
-    <div className="flex flex-col gap-1 w-20 h-full">
-      {lights.map((light) => (
+    <div className="grid grid-cols-2 gap-1.5 w-[84px]">
+      {indicators.map((ind) => (
         <div
-          key={light.id}
+          key={ind.id}
           className={cn(
-            "flex-1 flex items-center justify-center border rounded-sm transition-all duration-300",
-            light.active 
-              ? `${light.bg} ${light.border} ${light.glow}` 
+            "w-10 h-10 border-2 rounded-sm flex items-center justify-center transition-all duration-200",
+            ind.active 
+              ? `${ind.bg} ${ind.border} ${ind.glow}` 
               : "bg-zinc-950 border-zinc-900"
           )}
         >
-          <span className={cn(
-            "text-[8px] font-black tracking-widest italic transition-all duration-300",
-            light.active ? light.color : "text-zinc-900"
-          )}>
-            {light.label}
-          </span>
+          <ind.icon 
+            size={20} 
+            strokeWidth={2.5}
+            className={cn(
+              "transition-all duration-200",
+              ind.active ? ind.color : "text-zinc-900"
+            )} 
+          />
         </div>
       ))}
     </div>
