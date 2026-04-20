@@ -72,9 +72,9 @@ const AE86Dashboard = () => {
       "flex flex-col items-center justify-center min-h-screen transition-colors duration-1000 p-4 md:p-8 font-mono",
       isEcoMode ? "bg-black" : "bg-zinc-950"
     )}>
-      {/* Authentic AE86 Digital Cluster Frame - Expanded to include controls */}
+      {/* Authentic AE86 Digital Cluster Frame */}
       <div className={cn(
-        "relative w-full max-w-5xl border-[12px] border-zinc-900 rounded-sm overflow-hidden flex flex-col p-4 md:p-8 transition-all duration-500",
+        "relative w-full max-w-5xl border-8 md:border-[12px] border-zinc-900 rounded-sm overflow-hidden flex flex-col p-4 md:p-8 transition-all duration-500",
         isEcoMode 
           ? "bg-black shadow-none" 
           : "bg-[#050505] shadow-[0_0_100px_rgba(0,0,0,1),inset_0_0_60px_rgba(0,0,0,1)]"
@@ -87,42 +87,42 @@ const AE86Dashboard = () => {
         <div className="relative flex-1 flex flex-col border-2 border-zinc-800/30 p-4 md:p-6">
           
           {/* Top Section: Speed Arc & Readout */}
-          <div className="relative w-full h-64 md:h-72 mb-8 flex flex-col items-center justify-center">
+          <div className="relative w-full h-56 md:h-72 mb-8 flex flex-col items-center justify-center">
             
-            {/* Speed Arc SVG */}
-            <svg width="400" height="200" viewBox="0 0 400 200" className="absolute top-0 overflow-visible">
+            {/* Speed Arc SVG - Adjusted for mobile fit */}
+            <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
               {/* Background Arc */}
               <path 
-                d="M 50 180 A 150 150 0 0 1 350 180" 
+                d="M 40 150 A 120 120 0 0 1 280 150" 
                 fill="none" 
                 stroke="#1a1a1a" 
-                strokeWidth="14" 
+                strokeWidth="12" 
                 strokeLinecap="round"
               />
               {/* Active Speed Arc */}
               <path 
-                d="M 50 180 A 150 150 0 0 1 350 180" 
+                d="M 40 150 A 120 120 0 0 1 280 150" 
                 fill="none" 
                 stroke={isChiming ? "#ea580c" : "#10b981"} 
-                strokeWidth="14" 
+                strokeWidth="12" 
                 strokeLinecap="round"
-                strokeDasharray="500"
-                strokeDashoffset={500 - (speedPercent * 4.8)}
+                strokeDasharray="400"
+                strokeDashoffset={400 - (speedPercent * 3.8)}
                 className="transition-all duration-200 ease-out"
                 style={{ filter: isChiming ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
               />
               {/* Speed Scale Markers */}
               {[0, 20, 40, 60, 80, 100, 120, 140].map((val, i) => {
                 const angle = (i / 7) * Math.PI;
-                const x = 200 - Math.cos(angle) * 180;
-                const y = 180 - Math.sin(angle) * 180;
+                const x = 160 - Math.cos(angle) * 145;
+                const y = 150 - Math.sin(angle) * 145;
                 return (
                   <text 
                     key={val} 
                     x={x} 
                     y={y} 
                     fill="#333" 
-                    fontSize="12" 
+                    fontSize="10" 
                     fontWeight="bold" 
                     textAnchor="middle"
                   >
@@ -133,17 +133,17 @@ const AE86Dashboard = () => {
             </svg>
 
             {/* Speed Readout */}
-            <div className="flex flex-col items-center mt-20 z-30">
+            <div className="flex flex-col items-center mt-16 z-30">
               <div className="flex items-baseline">
                 <span className={cn(
-                  "text-8xl md:text-9xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
+                  "text-7xl md:text-9xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
                   isChiming ? "text-orange-500 drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]"
                 )}>
                   {displaySpeed}
                 </span>
-                <span className="text-2xl md:text-3xl font-black text-zinc-700 ml-2 italic">km/h</span>
+                <span className="text-lg md:text-2xl font-black text-zinc-700 ml-2 italic">km/h</span>
               </div>
-              <div className="mt-2 text-[10px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
+              <div className="mt-2 text-[8px] md:text-[10px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
             </div>
           </div>
 
