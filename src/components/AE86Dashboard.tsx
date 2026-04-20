@@ -62,15 +62,15 @@ const AE86Dashboard = () => {
   // Calculate Speed Arc Percent (0-140 km/h range)
   const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
 
-  // Retro Gauge Graduations
+  // Retro Gauge Graduations - Enlarged
   const renderGraduations = () => {
     const elements = [];
     const totalTicks = 14; // Every 10 km/h
-    const radius = 115;
-    const innerRadius = 100;
-    const textRadius = 85;
+    const radius = 135;
+    const innerRadius = 118;
+    const textRadius = 98;
     const centerX = 160;
-    const centerY = 140;
+    const centerY = 150;
 
     for (let i = 0; i <= totalTicks; i++) {
       const angle = Math.PI + (i / totalTicks) * Math.PI;
@@ -88,11 +88,11 @@ const AE86Dashboard = () => {
           x2={x2}
           y2={y2}
           stroke="#333"
-          strokeWidth="2"
+          strokeWidth="2.5"
         />
       );
 
-      // Numbers every 20 km/h
+      // Numbers every 20 km/h - Enlarged
       if (i % 2 === 0) {
         const tx = centerX + Math.cos(angle) * textRadius;
         const ty = centerY + Math.sin(angle) * textRadius;
@@ -102,7 +102,7 @@ const AE86Dashboard = () => {
             x={tx}
             y={ty}
             fill="#222"
-            fontSize="8"
+            fontSize="11"
             fontWeight="900"
             textAnchor="middle"
             alignmentBaseline="middle"
@@ -127,35 +127,35 @@ const AE86Dashboard = () => {
         <div className="relative flex-1 flex flex-col justify-between">
           
           {/* Speedometer Section */}
-          <div className="relative w-full h-48 flex flex-col items-center justify-center">
+          <div className="relative w-full h-52 flex flex-col items-center justify-center">
             <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
               {renderGraduations()}
               
-              {/* Background Track */}
+              {/* Background Track - Enlarged */}
               <path 
-                d="M 45 140 A 115 115 0 0 1 275 140" 
+                d="M 25 150 A 135 135 0 0 1 295 150" 
                 fill="none" 
                 stroke="#111" 
-                strokeWidth="14" 
+                strokeWidth="16" 
                 strokeLinecap="butt"
               />
               
-              {/* Active Speed Bar */}
+              {/* Active Speed Bar - Enlarged */}
               <path 
-                d="M 45 140 A 115 115 0 0 1 275 140" 
+                d="M 25 150 A 135 135 0 0 1 295 150" 
                 fill="none" 
                 stroke={isChiming ? "#f97316" : "#00ffcc"} 
-                strokeWidth="14" 
+                strokeWidth="16" 
                 strokeLinecap="butt"
-                strokeDasharray="361"
-                strokeDashoffset={361 - (speedPercent * 3.61)}
+                strokeDasharray="424"
+                strokeDashoffset={424 - (speedPercent * 4.24)}
                 className="transition-all duration-300 ease-out"
                 style={{ filter: isChiming ? 'drop-shadow(0 0 12px #f97316)' : 'drop-shadow(0 0 12px #00ffcc)' }}
               />
             </svg>
 
             {/* Digital Speed Readout */}
-            <div className="flex flex-col items-center z-30 mt-6">
+            <div className="flex flex-col items-center z-30 mt-10">
               <div className="flex items-baseline gap-1">
                 <span className={cn(
                   "text-8xl font-black tracking-tighter tabular-nums leading-none italic transition-all duration-150",
@@ -172,7 +172,7 @@ const AE86Dashboard = () => {
           </div>
 
           {/* Secondary Displays */}
-          <div className="flex justify-between items-end px-2 -mt-4">
+          <div className="flex justify-between items-end px-2 -mt-2">
             {/* Left: VFD Style Temp & Trip */}
             <div className="flex flex-col gap-3">
               <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[100px]">
