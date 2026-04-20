@@ -10,6 +10,7 @@ import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
 import DigitalClock from './DigitalClock';
 import WarningLights from './WarningLights';
+import TripMeter from './TripMeter';
 import {
   Select,
   SelectContent,
@@ -177,11 +178,8 @@ const AE86Dashboard = () => {
                 </div>
                 <DigitalClock />
               </div>
-              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm h-12 flex flex-col justify-center">
-                <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">TRIP METER</div>
-                <div className="text-xl font-black text-zinc-500 tabular-nums italic leading-none">
-                  {tripDistance.toFixed(1)}<span className="text-[10px] ml-1">km</span>
-                </div>
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm h-16 flex flex-col justify-center">
+                <TripMeter distance={tripDistance} />
               </div>
             </div>
 
