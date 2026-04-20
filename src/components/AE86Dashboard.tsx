@@ -81,27 +81,27 @@ const AE86Dashboard = () => {
     )}>
       {/* Authentic AE86 Digital Cluster Frame */}
       <div className={cn(
-        "relative w-full max-w-5xl aspect-[2.4/1] border-[12px] border-zinc-900 rounded-sm overflow-hidden flex flex-col p-4 md:p-8 transition-all duration-500",
+        "relative w-full max-w-5xl aspect-[2/1] md:aspect-[2.4/1] border-[12px] border-zinc-900 rounded-sm overflow-hidden flex flex-col p-4 md:p-8 transition-all duration-500",
         isEcoMode 
           ? "bg-black shadow-none" 
           : "bg-[#050505] shadow-[0_0_100px_rgba(0,0,0,1),inset_0_0_60px_rgba(0,0,0,1)]"
       )}>
         
         {/* CRT Scanline Effect */}
-        <div className="absolute inset-0 pointer-events-none z-10 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.15)_50%)] bg-[length:100%_4px] opacity-40" />
+        <div className="absolute inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-30" />
         
         {/* Main Display Area */}
         <div className="relative flex-1 flex flex-col border-2 border-zinc-800/30 p-4 md:p-6">
           
           {/* Top Section: Curved Tachometer */}
-          <div className="relative w-full h-40 md:h-48 mb-4">
+          <div className="relative w-full h-48 md:h-56 mb-2">
             <svg viewBox="0 0 800 200" className="w-full h-full overflow-visible">
               {/* Tachometer Background Arc */}
               <path 
                 d="M 50 180 Q 150 50 400 50 Q 650 50 750 180" 
                 fill="none" 
                 stroke="#1a1a1a" 
-                strokeWidth="16" 
+                strokeWidth="18" 
                 strokeLinecap="round"
               />
               
@@ -110,12 +110,12 @@ const AE86Dashboard = () => {
                 d="M 50 180 Q 150 50 400 50 Q 650 50 750 180" 
                 fill="none" 
                 stroke={rpmPercent > 85 ? "#ea580c" : "#10b981"} 
-                strokeWidth="16" 
+                strokeWidth="18" 
                 strokeLinecap="round"
                 strokeDasharray="1000"
                 strokeDashoffset={1000 - (rpmPercent * 10)}
                 className="transition-all duration-300 ease-out"
-                style={{ filter: rpmPercent > 85 ? 'drop-shadow(0 0 12px #ea580c)' : 'drop-shadow(0 0 12px #10b981)' }}
+                style={{ filter: rpmPercent > 85 ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
               />
 
               {/* Tachometer Numbers */}
@@ -128,7 +128,7 @@ const AE86Dashboard = () => {
                     x={adjX} 
                     y={adjY} 
                     fill={num >= 7 ? "#991b1b" : "#444"} 
-                    fontSize="18" 
+                    fontSize="20" 
                     fontWeight="900" 
                     textAnchor="middle"
                     className="font-sans italic"
@@ -138,18 +138,18 @@ const AE86Dashboard = () => {
                 );
               })}
               
-              <text x="180" y="180" fill="#333" fontSize="12" fontWeight="bold" className="uppercase tracking-[0.2em]">
+              <text x="180" y="180" fill="#333" fontSize="14" fontWeight="bold" className="uppercase tracking-[0.2em]">
                 TACH x100r/min
               </text>
             </svg>
 
-            {/* Speed Electronic Display Box */}
-            <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900/80 border-2 border-zinc-800 p-4 md:p-6 rounded-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] min-w-[220px] flex flex-col items-center z-20">
+            {/* Speed Electronic Display Box - MOVED HIGHER */}
+            <div className="absolute top-[45%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900/95 border-2 border-zinc-800 p-4 md:p-6 rounded-sm shadow-[0_0_30px_rgba(0,0,0,0.9),inset_0_0_20px_rgba(0,0,0,0.8)] min-w-[240px] flex flex-col items-center z-30">
               <div className="absolute top-1 left-2 text-[8px] text-zinc-600 font-black uppercase tracking-widest">SPEED</div>
               <div className="flex items-baseline">
                 <span className={cn(
                   "text-7xl md:text-8xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
-                  isChiming ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.7)]" : "text-[#10b981] drop-shadow-[0_0_20px_rgba(16,185,129,0.6)]"
+                  isChiming ? "text-orange-500 drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]"
                 )}>
                   {displaySpeed}
                 </span>
@@ -160,12 +160,12 @@ const AE86Dashboard = () => {
           </div>
 
           {/* Middle: Side Gauges */}
-          <div className="flex-1 flex items-center justify-between px-4">
+          <div className="flex-1 flex items-center justify-between px-4 mt-4">
             
             {/* Left: Fuel Gauge */}
             <div className="flex flex-col items-center gap-2 w-16">
               <div className="text-[10px] text-zinc-600 font-black uppercase">FUEL</div>
-              <div className="w-10 h-32 border-2 border-zinc-800 p-1 flex flex-col-reverse gap-[2px] bg-zinc-900/20">
+              <div className="w-10 h-32 border-2 border-zinc-800 p-1 flex flex-col-reverse gap-[2px] bg-zinc-900/40">
                 {Array.from({ length: 12 }).map((_, i) => (
                   <div 
                     key={i} 
@@ -184,7 +184,7 @@ const AE86Dashboard = () => {
             {/* Right: Temp Gauge */}
             <div className="flex flex-col items-center gap-2 w-16">
               <div className="text-[10px] text-zinc-600 font-black uppercase">TEMP</div>
-              <div className="w-10 h-32 border-2 border-zinc-800 p-1 flex flex-col-reverse gap-[2px] bg-zinc-900/20">
+              <div className="w-10 h-32 border-2 border-zinc-800 p-1 flex flex-col-reverse gap-[2px] bg-zinc-900/40">
                 {Array.from({ length: 12 }).map((_, i) => {
                   const isActive = (i / 12) * 100 < tempPercent;
                   const isHot = i > 9;
@@ -207,7 +207,7 @@ const AE86Dashboard = () => {
           </div>
 
           {/* Bottom: Warning Lights Row */}
-          <div className="mt-6 flex justify-end gap-4 md:gap-8 border-t border-zinc-800/30 pt-4">
+          <div className="mt-4 flex justify-end gap-4 md:gap-8 border-t border-zinc-800/30 pt-4">
             <div className={cn("flex flex-col items-center gap-1 transition-colors", isChiming ? "text-orange-600" : "text-zinc-900")}>
               <AlertTriangle size={20} className={isChiming ? "animate-pulse" : ""} />
               <span className="text-[7px] font-black uppercase">Brake</span>
@@ -275,7 +275,7 @@ const AE86Dashboard = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-8 w-full">
-            {/* Ignition Button - Styled exactly as screenshot */}
+            {/* Ignition Button */}
             <div className="flex justify-center">
               <button
                 onClick={isActive ? stopTracking : startTracking}
