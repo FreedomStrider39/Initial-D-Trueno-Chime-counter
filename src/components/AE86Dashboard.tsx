@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Volume2, VolumeX, Power, BatteryLow, Beaker, Zap, Droplets, Info, WifiOff } from 'lucide-react';
+import { AlertTriangle, Volume2, VolumeX, Power, Beaker, Zap, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
@@ -63,14 +63,14 @@ const AE86Dashboard = () => {
   // Calculate Speed Arc Percent (0-140 km/h range)
   const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
 
-  // Helper to generate graduation ticks
+  // Helper to generate graduation ticks (Restored to previous "perfect" size)
   const renderTicks = () => {
     const ticks = [];
     const totalTicks = 28;
-    const radius = 100;
-    const innerRadius = 94;
+    const radius = 110;
+    const innerRadius = 102;
     const centerX = 160;
-    const centerY = 130;
+    const centerY = 140;
 
     for (let i = 0; i <= totalTicks; i++) {
       const angle = Math.PI + (i / totalTicks) * Math.PI;
@@ -88,7 +88,7 @@ const AE86Dashboard = () => {
           y1={y1}
           x2={x2}
           y2={y2}
-          stroke={isMajor ? "#444" : "#222"}
+          stroke={isMajor ? "#555" : "#222"}
           strokeWidth={isMajor ? "2" : "1"}
         />
       );
@@ -113,32 +113,32 @@ const AE86Dashboard = () => {
         {/* Main Display Area */}
         <div className="relative flex-1 flex flex-col justify-between">
           
-          {/* Top: Speed Arc */}
-          <div className="relative w-full h-40 flex flex-col items-center justify-center mt-2">
-            <svg width="280" height="140" viewBox="0 0 320 160" className="absolute top-0 overflow-visible scale-90">
+          {/* Top: Speed Arc (Restored Size) */}
+          <div className="relative w-full h-44 flex flex-col items-center justify-center mt-2">
+            <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
               {renderTicks()}
               <path 
-                d="M 60 130 A 100 100 0 0 1 260 130" 
+                d="M 50 140 A 110 110 0 0 1 270 140" 
                 fill="none" 
                 stroke="#111" 
-                strokeWidth="10" 
+                strokeWidth="12" 
                 strokeLinecap="butt"
               />
               <path 
-                d="M 60 130 A 100 100 0 0 1 260 130" 
+                d="M 50 140 A 110 110 0 0 1 270 140" 
                 fill="none" 
                 stroke={isChiming ? "#ea580c" : "#10b981"} 
-                strokeWidth="10" 
+                strokeWidth="12" 
                 strokeLinecap="butt"
-                strokeDasharray="314"
-                strokeDashoffset={314 - (speedPercent * 3.14)}
+                strokeDasharray="345"
+                strokeDashoffset={345 - (speedPercent * 3.45)}
                 className="transition-all duration-200 ease-out"
                 style={{ filter: isChiming ? 'drop-shadow(0 0 10px #ea580c)' : 'drop-shadow(0 0 10px #10b981)' }}
               />
             </svg>
 
-            {/* Speed Readout */}
-            <div className="flex flex-col items-center z-30 -mt-4">
+            {/* Speed Readout - Centered */}
+            <div className="flex flex-col items-center z-30 mt-4">
               <div className="flex items-baseline">
                 <span className={cn(
                   "text-7xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
@@ -151,36 +151,36 @@ const AE86Dashboard = () => {
             </div>
           </div>
 
-          {/* Middle: Info Row */}
-          <div className="flex justify-between items-start px-4 -mt-4">
-            {/* Left: Temp & Trip */}
-            <div className="flex flex-col gap-2">
+          {/* Middle: Info Row (Compact) */}
+          <div className="flex justify-between items-end px-4 -mt-2">
+            {/* Left: Temp & Trip (AE86 Style) */}
+            <div className="flex flex-col gap-1">
               <div className="flex flex-col">
                 <span className="text-[7px] text-zinc-700 font-black uppercase tracking-widest">TEMP</span>
-                <span className="text-lg font-black text-[#10b981]/80 tabular-nums italic leading-none">
+                <span className="text-xl font-black text-[#10b981]/80 tabular-nums italic leading-none">
                   {temp !== null ? `${temp}°C` : '--°C'}
                 </span>
               </div>
-              <div className="flex flex-col">
+              <div className="flex flex-col mt-1">
                 <span className="text-[7px] text-zinc-700 font-black uppercase tracking-widest">TRIP</span>
-                <span className="text-lg font-black text-zinc-400 tabular-nums italic leading-none">
+                <span className="text-xl font-black text-zinc-400 tabular-nums italic leading-none">
                   {tripDistance.toFixed(1)}<span className="text-[8px] ml-0.5">km</span>
                 </span>
               </div>
             </div>
 
-            {/* Right: Error Icons */}
-            <div className="flex flex-col items-end gap-2">
+            {/* Right: System Icons (Retro Style) */}
+            <div className="flex flex-col items-end gap-1">
               <span className="text-[7px] text-zinc-700 font-black uppercase tracking-widest">SYSTEM</span>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <div className={cn("transition-colors", error ? "text-orange-600" : "text-zinc-900")}>
-                  <WifiOff size={16} />
+                  <WifiOff size={18} />
                 </div>
                 <div className={cn("transition-colors", isChiming ? "text-orange-600 animate-pulse" : "text-zinc-900")}>
-                  <AlertTriangle size={16} />
+                  <AlertTriangle size={18} />
                 </div>
                 <div className="text-zinc-900">
-                  <Zap size={16} />
+                  <Zap size={18} />
                 </div>
               </div>
             </div>
