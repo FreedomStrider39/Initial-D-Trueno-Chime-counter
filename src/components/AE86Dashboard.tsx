@@ -60,9 +60,9 @@ const AE86Dashboard = () => {
   const displaySpeed = isSimulating ? simSpeed : gpsSpeed;
   const isChiming = isSimulating ? simIsChiming : gpsIsChiming;
 
-  // Calculate Tachometer (RPM) simulation based on speed
-  const rpmPercent = Math.min((displaySpeed / 140) * 100, 100);
-  
+  // Calculate Speed Arc Percent (0-140 km/h range)
+  const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
+
   // Calculate Temp Gauge (0-40C range for visualization)
   const displayTemp = temp ?? 20; 
   const tempPercent = Math.min(Math.max((displayTemp / 40) * 100, 0), 100);
@@ -86,70 +86,64 @@ const AE86Dashboard = () => {
         {/* Main Display Area */}
         <div className="relative flex-1 flex flex-col border-2 border-zinc-800/30 p-4 md:p-6">
           
-          {/* Top Section: Curved Tachometer */}
-          <div className="relative w-full h-40 md:h-48 mb-8">
-            <svg viewBox="0 0 800 160" className="w-full h-full overflow-visible">
-              {/* Tachometer Background Arc */}
+          {/* Top Section: Speed Arc & Readout */}
+          <div className="relative w-full h-64 md:h-72 mb-8 flex flex-col items-center justify-center">
+            
+            {/* Speed Arc SVG */}
+            <svg width="400" height="200" viewBox="0 0 400 200" className="absolute top-0 overflow-visible">
+              {/* Background Arc */}
               <path 
-                d="M 50 150 Q 150 30 400 30 Q 650 30 750 150" 
+                d="M 50 180 A 150 150 0 0 1 350 180" 
                 fill="none" 
                 stroke="#1a1a1a" 
                 strokeWidth="14" 
                 strokeLinecap="round"
               />
-              
-              {/* Tachometer Active Segments */}
+              {/* Active Speed Arc */}
               <path 
-                d="M 50 150 Q 150 30 400 30 Q 650 30 750 150" 
+                d="M 50 180 A 150 150 0 0 1 350 180" 
                 fill="none" 
-                stroke={rpmPercent > 85 ? "#ea580c" : "#10b981"} 
+                stroke={isChiming ? "#ea580c" : "#10b981"} 
                 strokeWidth="14" 
                 strokeLinecap="round"
-                strokeDasharray="1000"
-                strokeDashoffset={1000 - (rpmPercent * 10)}
-                className="transition-all duration-300 ease-out"
-                style={{ filter: rpmPercent > 85 ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
+                strokeDasharray="500"
+                strokeDashoffset={500 - (speedPercent * 4.8)}
+                className="transition-all duration-200 ease-out"
+                style={{ filter: isChiming ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
               />
-
-              {/* Tachometer Numbers */}
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((num) => {
-                const adjX = [50, 120, 210, 310, 400, 490, 590, 680, 750][num];
-                const adjY = [165, 110, 75, 55, 50, 55, 75, 110, 165][num];
+              {/* Speed Scale Markers */}
+              {[0, 20, 40, 60, 80, 100, 120, 140].map((val, i) => {
+                const angle = (i / 7) * Math.PI;
+                const x = 200 - Math.cos(angle) * 180;
+                const y = 180 - Math.sin(angle) * 180;
                 return (
                   <text 
-                    key={num} 
-                    x={adjX} 
-                    y={adjY} 
-                    fill={num >= 7 ? "#991b1b" : "#444"} 
-                    fontSize="18" 
-                    fontWeight="900" 
+                    key={val} 
+                    x={x} 
+                    y={y} 
+                    fill="#333" 
+                    fontSize="12" 
+                    fontWeight="bold" 
                     textAnchor="middle"
-                    className="font-sans italic"
                   >
-                    {num}
+                    {val}
                   </text>
                 );
               })}
-              
-              <text x="180" y="150" fill="#333" fontSize="12" fontWeight="bold" className="uppercase tracking-[0.2em]">
-                TACH x100r/min
-              </text>
             </svg>
 
-            {/* Speed Electronic Display */}
-            <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
-              <div className="flex flex-col items-center">
-                <div className="flex items-baseline">
-                  <span className={cn(
-                    "text-7xl md:text-8xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
-                    isChiming ? "text-orange-500 drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]"
-                  )}>
-                    {displaySpeed}
-                  </span>
-                  <span className="text-xl md:text-2xl font-black text-zinc-700 ml-2 italic">km/h</span>
-                </div>
-                <div className="mt-2 text-[8px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
+            {/* Speed Readout */}
+            <div className="flex flex-col items-center mt-20 z-30">
+              <div className="flex items-baseline">
+                <span className={cn(
+                  "text-8xl md:text-9xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
+                  isChiming ? "text-orange-500 drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]"
+                )}>
+                  {displaySpeed}
+                </span>
+                <span className="text-2xl md:text-3xl font-black text-zinc-700 ml-2 italic">km/h</span>
               </div>
+              <div className="mt-2 text-[10px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
             </div>
           </div>
 
