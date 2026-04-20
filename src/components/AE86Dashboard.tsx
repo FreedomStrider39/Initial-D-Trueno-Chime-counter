@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Volume2, VolumeX, Power, Beaker, Zap, WifiOff, Radio } from 'lucide-react';
+import { Volume2, VolumeX, Power, Beaker } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
 import DigitalClock from './DigitalClock';
+import WarningLights from './WarningLights';
 import {
   Select,
   SelectContent,
@@ -63,10 +64,10 @@ const AE86Dashboard = () => {
   // Calculate Speed Arc Percent (0-140 km/h range)
   const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
 
-  // Retro Gauge Graduations - Enlarged
+  // Retro Gauge Graduations
   const renderGraduations = () => {
     const elements = [];
-    const totalTicks = 14; // Every 10 km/h
+    const totalTicks = 14;
     const radius = 135;
     const innerRadius = 118;
     const textRadius = 98;
@@ -80,7 +81,6 @@ const AE86Dashboard = () => {
       const x2 = centerX + Math.cos(angle) * innerRadius;
       const y2 = centerY + Math.sin(angle) * innerRadius;
       
-      // Tick marks
       elements.push(
         <line
           key={`tick-${i}`}
@@ -93,7 +93,6 @@ const AE86Dashboard = () => {
         />
       );
 
-      // Numbers every 20 km/h - Enlarged
       if (i % 2 === 0) {
         const tx = centerX + Math.cos(angle) * textRadius;
         const ty = centerY + Math.sin(angle) * textRadius;
@@ -119,20 +118,15 @@ const AE86Dashboard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen w-full bg-zinc-950 p-2 font-mono overflow-hidden">
-      {/* Main Cluster Housing */}
       <div className="relative w-full max-w-md border-[6px] border-zinc-900 rounded-sm bg-[#080808] shadow-[0_0_50px_rgba(0,0,0,1),inset_0_0_30px_rgba(0,0,0,1)] flex flex-col p-4 h-full max-h-[620px]">
         
-        {/* CRT Overlay */}
         <div className="absolute inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-20" />
         
         <div className="relative flex-1 flex flex-col justify-between">
           
-          {/* Speedometer Section */}
           <div className="relative w-full h-52 flex flex-col items-center justify-center">
             <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
               {renderGraduations()}
-              
-              {/* Background Track - Enlarged */}
               <path 
                 d="M 25 150 A 135 135 0 0 1 295 150" 
                 fill="none" 
@@ -140,8 +134,6 @@ const AE86Dashboard = () => {
                 strokeWidth="16" 
                 strokeLinecap="butt"
               />
-              
-              {/* Active Speed Bar - Enlarged */}
               <path 
                 d="M 25 150 A 135 135 0 0 1 295 150" 
                 fill="none" 
@@ -155,7 +147,6 @@ const AE86Dashboard = () => {
               />
             </svg>
 
-            {/* Digital Speed Readout */}
             <div className="flex flex-col items-center z-30 mt-10">
               <div className="flex items-baseline gap-1">
                 <span className={cn(
@@ -172,57 +163,33 @@ const AE86Dashboard = () => {
             </div>
           </div>
 
-          {/* Secondary Displays */}
-          <div className="flex justify-between items-end px-2 -mt-2">
-            {/* Left: VFD Style Temp, Clock & Trip */}
-            <div className="flex flex-col gap-3 w-full max-w-[240px]">
-              <div className="flex gap-2">
-                <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1">
-                  <div className="flex items-center justify-between mb-1">
-                    <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em]">OAT TEMP</div>
-                    <Radio size={8} className={cn("text-zinc-800", temp !== null && "text-orange-500 animate-pulse")} />
-                  </div>
+          <div className="flex justify-between items-stretch px-2 -mt-2 h-32">
+            <div className="flex flex-col gap-3 flex-1 max-w-[240px]">
+              <div className="flex gap-2 flex-1">
+                <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1 flex flex-col justify-between">
+                  <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em]">OAT TEMP</div>
                   <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
                     {temp !== null ? `${temp}°C` : '--°C'}
                   </div>
-                  <div className="text-[6px] text-zinc-800 font-bold mt-1 tracking-tighter truncate">
+                  <div className="text-[6px] text-zinc-800 font-bold tracking-tighter truncate">
                     {station}
                   </div>
                 </div>
                 <DigitalClock />
               </div>
-              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm">
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm h-12 flex flex-col justify-center">
                 <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">TRIP METER</div>
-                <div className="text-2xl font-black text-zinc-500 tabular-nums italic leading-none">
+                <div className="text-xl font-black text-zinc-500 tabular-nums italic leading-none">
                   {tripDistance.toFixed(1)}<span className="text-[10px] ml-1">km</span>
                 </div>
               </div>
             </div>
 
-            {/* Right: Retro Warning Lights */}
-            <div className="grid grid-cols-2 gap-1">
-              <div className={cn(
-                "w-10 h-8 border flex items-center justify-center transition-all duration-300",
-                error ? "bg-orange-950/30 border-orange-500 text-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.4)]" : "bg-zinc-950 border-zinc-900 text-zinc-900"
-              )}>
-                <WifiOff size={16} strokeWidth={3} />
-              </div>
-              <div className={cn(
-                "w-10 h-8 border flex items-center justify-center transition-all duration-300",
-                isChiming ? "bg-orange-950/50 border-orange-600 text-orange-600 animate-pulse shadow-[0_0_15px_rgba(234,88,12,0.5)]" : "bg-zinc-950 border-zinc-900 text-zinc-900"
-              )}>
-                <AlertTriangle size={16} strokeWidth={3} />
-              </div>
-              <div className="w-10 h-8 border border-zinc-900 bg-zinc-950 flex items-center justify-center text-zinc-900">
-                <Zap size={16} strokeWidth={3} />
-              </div>
-              <div className="w-10 h-8 border border-zinc-900 bg-zinc-950 flex items-center justify-center text-zinc-900">
-                <Beaker size={16} strokeWidth={3} />
-              </div>
+            <div className="ml-2">
+              <WarningLights isChiming={isChiming} hasError={!!error} />
             </div>
           </div>
 
-          {/* Control Panel */}
           <div className="mt-6 border-t-2 border-zinc-900 pt-6 pb-2">
             {isSimulating ? (
               <div className="space-y-4 bg-zinc-900/10 p-4 rounded-sm border border-zinc-900/50">
@@ -299,7 +266,6 @@ const AE86Dashboard = () => {
             )}
           </div>
 
-          {/* Footer Branding */}
           <div className="flex justify-between items-center px-2 pt-4 border-t border-zinc-900/30">
             <div className="text-[9px] text-zinc-800 font-black tracking-[0.2em] italic">
               {model} <span className="text-zinc-900 ml-1">TWIN CAM 16</span>
