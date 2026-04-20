@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Navigation, Volume2, VolumeX, Power, BatteryLow, Beaker, Map as MapIcon } from 'lucide-react';
+import { AlertTriangle, Navigation, Volume2, VolumeX, Power, BatteryLow, Beaker } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  const { speed: gpsSpeed, coords, isActive, isChiming: gpsIsChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
+  const { speed: gpsSpeed, isActive, isChiming: gpsIsChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
   
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
@@ -30,14 +30,6 @@ const AE86Dashboard = () => {
   const handleToggleMute = () => {
     const newMuteStatus = chime.toggleMute();
     setIsMuted(newMuteStatus);
-  };
-
-  const openGoogleMaps = () => {
-    let url = "https://www.google.com/maps";
-    if (coords) {
-      url = `https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`;
-    }
-    window.open(url, '_blank');
   };
 
   // Simulation Logic
@@ -99,15 +91,6 @@ const AE86Dashboard = () => {
           </div>
           
           <div className="flex gap-1 md:gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={openGoogleMaps}
-              className="h-8 w-8 md:h-10 md:w-10 text-zinc-500 hover:text-blue-500 hover:bg-blue-500/10"
-              title="Open Google Maps"
-            >
-              <MapIcon size={18} />
-            </Button>
             <Button 
               variant="ghost" 
               size="icon" 
