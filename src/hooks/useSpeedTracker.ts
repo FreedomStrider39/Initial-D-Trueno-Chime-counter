@@ -6,6 +6,7 @@ import { showSuccess, showError } from '@/utils/toast';
 
 export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: number = 95) => {
   const [speed, setSpeed] = useState<number>(0);
+  const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
   const [isActive, setIsActive] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [isChiming, setIsChiming] = useState<boolean>(false);
@@ -19,17 +20,15 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     }
 
     setIsActive(true);
-    showSuccess("Takumi Mode Activated");
+    showSuccess("Tracking Activated");
 
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
         const now = Date.now();
-        // Throttle UI updates to 2Hz (every 500ms) to save battery, 
-        // but keep logic processing for the chime real-time
         const currentSpeedMs = position.coords.speed || 0;
         const currentSpeedKmH = Math.round(currentSpeedMs * 3.6);
 
-        // Logic processing (Must be real-time for safety/accuracy)
+        // Logic processing
         if (currentSpeedKmH >= thresholdKmH) {
           if (!isChiming) {
             chime.start();
@@ -45,6 +44,10 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
         // UI Throttling
         if (now - lastUpdateRef.current > 500) {
           setSpeed(currentSpeedKmH);
+          setCoords({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          });
           lastUpdateRef.current = now;
         }
       },
@@ -53,8 +56,8 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
         console.error("GPS Error:", err.message);
       },
       {
-        enableHighAccuracy: true, // Required for speed
-        maximumAge: 1000,         // Allow 1s old data to reduce GPS hardware wake-ups
+        enableHighAccuracy: true,
+        maximumAge: 1000,
         timeout: 10000
       }
     );
@@ -67,9 +70,10 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     }
     setIsActive(false);
     setSpeed(0);
+    setCoords(null);
     setIsChiming(false);
     chime.stop();
-    showSuccess("Takumi Mode Deactivated");
+    showSuccess("Tracking Deactivated");
   };
 
   useEffect(() => {
@@ -81,5 +85,5 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     };
   }, []);
 
-  return { speed, isActive, isChiming, error, startTracking, stopTracking };
+  return { speed, coords, isActive, isChiming, error, startTracking, stopTracking };
 };
