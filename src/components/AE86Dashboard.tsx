@@ -163,9 +163,9 @@ const AE86Dashboard = () => {
             </div>
           </div>
 
-          <div className="flex justify-between items-end px-2 -mt-2">
+          <div className="flex justify-between items-stretch px-2 -mt-2 h-40">
             <div className="flex flex-col gap-3 flex-1 max-w-[220px]">
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-1">
                 <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1 flex flex-col justify-between">
                   <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">OAT TEMP</div>
                   <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
@@ -185,7 +185,7 @@ const AE86Dashboard = () => {
               </div>
             </div>
 
-            <div className="ml-4 mb-1 flex-1">
+            <div className="ml-4 w-24">
               <WarningLights isChiming={isChiming} hasError={!!error} />
             </div>
           </div>
