@@ -71,10 +71,10 @@ const AE86Dashboard = () => {
   const renderTicks = () => {
     const ticks = [];
     const totalTicks = 28; // Every 5 km/h up to 140
-    const radius = 125;
-    const innerRadius = 115;
+    const radius = 110; // Reduced from 125
+    const innerRadius = 102;
     const centerX = 160;
-    const centerY = 150;
+    const centerY = 140;
 
     for (let i = 0; i <= totalTicks; i++) {
       const angle = Math.PI + (i / totalTicks) * Math.PI;
@@ -92,7 +92,7 @@ const AE86Dashboard = () => {
           y1={y1}
           x2={x2}
           y2={y2}
-          stroke={isMajor ? "#444" : "#222"}
+          stroke={isMajor ? "#555" : "#222"}
           strokeWidth={isMajor ? "2" : "1"}
         />
       );
@@ -120,31 +120,31 @@ const AE86Dashboard = () => {
         <div className="relative flex-1 flex flex-col p-4 md:p-6">
           
           {/* Top Section: Speed Arc & Readout */}
-          <div className="relative w-full h-56 md:h-72 mb-8 flex flex-col items-center justify-center">
+          <div className="relative w-full h-48 md:h-64 mb-4 flex flex-col items-center justify-center">
             
             {/* Speed Arc SVG */}
             <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
               {/* Graduation Ticks */}
               {renderTicks()}
 
-              {/* Background Arc - Slanted Endings using stroke-linecap="butt" */}
+              {/* Background Arc - Slanted Endings */}
               <path 
-                d="M 35 150 A 125 125 0 0 1 285 150" 
+                d="M 50 140 A 110 110 0 0 1 270 140" 
                 fill="none" 
                 stroke="#111" 
-                strokeWidth="14" 
+                strokeWidth="12" 
                 strokeLinecap="butt"
               />
               
               {/* Active Speed Arc */}
               <path 
-                d="M 35 150 A 125 125 0 0 1 285 150" 
+                d="M 50 140 A 110 110 0 0 1 270 140" 
                 fill="none" 
                 stroke={isChiming ? "#ea580c" : "#10b981"} 
-                strokeWidth="14" 
+                strokeWidth="12" 
                 strokeLinecap="butt"
-                strokeDasharray="400"
-                strokeDashoffset={400 - (speedPercent * 3.9)}
+                strokeDasharray="345"
+                strokeDashoffset={345 - (speedPercent * 3.45)}
                 className="transition-all duration-200 ease-out"
                 style={{ filter: isChiming ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
               />
@@ -152,15 +152,15 @@ const AE86Dashboard = () => {
               {/* Speed Scale Numbers */}
               {[0, 20, 40, 60, 80, 100, 120, 140].map((val, i) => {
                 const angle = Math.PI + (i / 7) * Math.PI;
-                const x = 160 + Math.cos(angle) * 148;
-                const y = 150 + Math.sin(angle) * 148;
+                const x = 160 + Math.cos(angle) * 130;
+                const y = 140 + Math.sin(angle) * 130;
                 return (
                   <text 
                     key={val} 
                     x={x} 
                     y={y} 
-                    fill="#333" 
-                    fontSize="10" 
+                    fill="#444" 
+                    fontSize="9" 
                     fontWeight="900" 
                     textAnchor="middle"
                     className="italic"
@@ -171,36 +171,46 @@ const AE86Dashboard = () => {
               })}
             </svg>
 
-            {/* Speed Readout */}
-            <div className="flex flex-col items-center mt-16 z-30">
+            {/* Speed Readout - Centered */}
+            <div className="flex flex-col items-center mt-12 z-30">
               <div className="flex items-baseline">
                 <span className={cn(
-                  "text-7xl md:text-9xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
+                  "text-7xl md:text-8xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
                   isChiming ? "text-orange-500 drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]"
                 )}>
                   {displaySpeed}
                 </span>
-                <span className="text-sm md:text-lg font-black text-zinc-800 ml-1 italic uppercase">km/h</span>
+                <span className="text-xs md:text-sm font-black text-zinc-800 ml-1 italic uppercase">km/h</span>
               </div>
-              <div className="mt-1 text-[7px] md:text-[9px] text-zinc-800 font-black tracking-[0.5em] uppercase">DIGITAL SPEEDOMETER</div>
+              <div className="mt-1 text-[6px] md:text-[8px] text-zinc-800 font-black tracking-[0.5em] uppercase">DIGITAL SPEEDOMETER</div>
             </div>
           </div>
 
           {/* Middle: Side Gauges */}
           <div className="flex-1 flex items-center justify-end px-4 mt-2">
-            {/* Right: Temp Gauge */}
-            <div className="flex flex-col items-center gap-2 w-14">
-              <div className="text-[9px] text-zinc-600 font-black uppercase">TEMP</div>
-              <div className="w-8 h-28 border-2 border-zinc-800 p-1 flex flex-col-reverse gap-[2px] bg-zinc-900/40">
-                {Array.from({ length: 10 }).map((_, i) => {
-                  const isActive = (i / 10) * 100 < tempPercent;
-                  const isHot = i > 8;
+            {/* Right: Graduated Temp Gauge */}
+            <div className="flex flex-col items-center gap-2 w-16">
+              <div className="text-[8px] text-zinc-600 font-black uppercase tracking-widest">TEMP</div>
+              <div className="relative w-10 h-32 border-2 border-zinc-800 p-1.5 flex flex-col-reverse gap-[3px] bg-zinc-900/40">
+                {/* Graduation Marks on the side of the gauge */}
+                <div className="absolute -left-3 inset-y-0 flex flex-col justify-between py-1">
+                  {[1, 2, 3, 4, 5].map(i => (
+                    <div key={i} className="w-1.5 h-[1px] bg-zinc-800" />
+                  ))}
+                </div>
+                
+                {Array.from({ length: 12 }).map((_, i) => {
+                  const isActive = (i / 12) * 100 < tempPercent;
+                  const isHot = i > 10;
+                  const isCold = i < 2;
                   return (
                     <div 
                       key={i} 
                       className={cn(
-                        "w-full h-full transition-colors duration-500",
-                        isActive ? (isHot ? "bg-orange-600" : "bg-[#10b981]/80") : "bg-zinc-900"
+                        "w-full h-full transition-colors duration-500 rounded-[1px]",
+                        isActive 
+                          ? (isHot ? "bg-orange-600 shadow-[0_0_8px_rgba(234,88,12,0.5)]" : isCold ? "bg-blue-500" : "bg-[#10b981]/80") 
+                          : "bg-zinc-900/60"
                       )} 
                     />
                   );
@@ -209,7 +219,9 @@ const AE86Dashboard = () => {
               <div className="flex justify-between w-full text-[7px] text-zinc-700 font-black px-1">
                 <span>C</span><span>H</span>
               </div>
-              <div className="text-[9px] font-black text-[#10b981]/60 mt-1">{temp !== null ? `${temp}°C` : '--'}</div>
+              <div className="text-[10px] font-black text-[#10b981]/80 mt-1 tabular-nums">
+                {temp !== null ? `${temp}°C` : '--°C'}
+              </div>
             </div>
           </div>
 
