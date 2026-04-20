@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { chime } from '@/utils/audio';
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -13,6 +14,9 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
   const [isIgniting, setIsIgniting] = useState(false);
 
   const handleStart = () => {
+    // CRITICAL: Unlock audio on mobile during this user gesture
+    chime.unlock();
+    
     setIsIgniting(true);
     
     // Sequence: Intensifying shake -> Flash -> Warp Exit
