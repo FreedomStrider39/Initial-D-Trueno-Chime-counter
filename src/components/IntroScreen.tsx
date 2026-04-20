@@ -67,11 +67,11 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       )}>
         
         {/* Title Section */}
-        <div className="text-center space-y-2 mb-16">
-          <h1 className="text-zinc-400 text-[10px] tracking-[0.8em] uppercase font-mono drop-shadow-lg">
+        <div className="text-center space-y-2 mb-12 md:mb-16">
+          <h1 className="text-zinc-400 text-[8px] md:text-[10px] tracking-[0.6em] md:tracking-[0.8em] uppercase font-mono drop-shadow-lg">
             Initial D / Speed Monitor
           </h1>
-          <h2 className="text-white text-6xl font-black tracking-tighter font-mono italic drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+          <h2 className="text-white text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter font-mono italic drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
             AE86 <span className="text-orange-500">DRIFT</span>
           </h2>
         </div>
@@ -84,21 +84,21 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
         >
           <div className="relative">
             <div className={cn(
-              "absolute -inset-6 rounded-full blur-2xl transition-all duration-300",
+              "absolute -inset-4 md:-inset-6 rounded-full blur-2xl transition-all duration-300",
               isIgniting ? "bg-orange-500 opacity-100 scale-150" : "bg-orange-500/20 opacity-100 group-hover:bg-orange-500/40"
             )} />
             <div className={cn(
-              "relative w-24 h-24 rounded-full border-2 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm transition-all duration-300",
+              "relative w-20 h-20 md:w-24 md:h-24 rounded-full border-2 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm transition-all duration-300",
               isIgniting ? "border-orange-500 scale-110" : "border-zinc-700 group-hover:border-orange-500/50"
             )}>
               <Power className={cn(
                 "transition-all duration-300",
                 isIgniting ? "text-orange-500 scale-125" : "text-zinc-500 group-hover:text-orange-500"
-              )} size={40} />
+              )} size={32} />
             </div>
           </div>
           <span className={cn(
-            "text-[12px] font-mono tracking-[0.3em] uppercase transition-all duration-300 font-bold",
+            "text-[10px] md:text-[12px] font-mono tracking-[0.3em] uppercase transition-all duration-300 font-bold",
             isIgniting ? "text-orange-500 translate-y-2" : "text-zinc-400 group-hover:text-white"
           )}>
             {isIgniting ? "IGNITING..." : "Ignition"}
@@ -107,7 +107,7 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       </div>
 
       {/* Bottom Branding */}
-      <div className="absolute bottom-12 text-[10px] text-zinc-600 font-mono tracking-[0.5em] uppercase">
+      <div className="absolute bottom-8 md:bottom-12 text-[8px] md:text-[10px] text-zinc-600 font-mono tracking-[0.3em] md:tracking-[0.5em] uppercase text-center px-4">
         Fujiwara Tofu Shop (Private Use)
       </div>
 
