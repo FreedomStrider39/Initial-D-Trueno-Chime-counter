@@ -187,27 +187,7 @@ const AE86Dashboard = () => {
           </div>
 
           {/* Middle: Side Gauges */}
-          <div className="flex-1 flex items-center justify-between px-4 mt-2">
-            
-            {/* Left: Fuel Gauge */}
-            <div className="flex flex-col items-center gap-2 w-14">
-              <div className="text-[9px] text-zinc-600 font-black uppercase">FUEL</div>
-              <div className="w-8 h-28 border-2 border-zinc-800 p-1 flex flex-col-reverse gap-[2px] bg-zinc-900/40">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <div 
-                    key={i} 
-                    className={cn(
-                      "w-full h-full transition-colors duration-500",
-                      i < 7 ? "bg-[#10b981]/80" : "bg-zinc-900"
-                    )} 
-                  />
-                ))}
-              </div>
-              <div className="flex justify-between w-full text-[7px] text-zinc-700 font-black px-1">
-                <span>E</span><span>F</span>
-              </div>
-            </div>
-
+          <div className="flex-1 flex items-center justify-end px-4 mt-2">
             {/* Right: Temp Gauge */}
             <div className="flex flex-col items-center gap-2 w-14">
               <div className="text-[9px] text-zinc-600 font-black uppercase">TEMP</div>
