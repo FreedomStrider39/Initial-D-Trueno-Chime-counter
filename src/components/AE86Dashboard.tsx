@@ -58,141 +58,137 @@ const AE86Dashboard = () => {
   const displaySpeed = isSimulating ? simSpeed : gpsSpeed;
   const isChiming = isSimulating ? simIsChiming : gpsIsChiming;
 
+  // Calculate Tachometer (RPM) simulation based on speed
+  const rpmPercent = Math.min((displaySpeed / 140) * 100, 100);
+
   return (
     <div className={cn(
       "flex flex-col items-center justify-center min-h-screen transition-colors duration-1000 p-4 md:p-8 font-mono",
       isEcoMode ? "bg-black" : "bg-zinc-950"
     )}>
-      {/* Retro Dashboard Container */}
+      {/* Retro Digital Cluster Container */}
       <div className={cn(
-        "relative w-full max-w-lg aspect-square md:aspect-[4/3] border-4 rounded-2xl overflow-hidden flex flex-col p-6 md:p-10 transition-all duration-500",
+        "relative w-full max-w-2xl aspect-[2/1] border-[6px] rounded-sm overflow-hidden flex flex-col p-4 md:p-6 transition-all duration-500",
         isEcoMode 
-          ? "bg-zinc-950 border-zinc-900 shadow-none opacity-40" 
-          : "bg-zinc-900 border-zinc-800 shadow-[0_0_50px_rgba(0,0,0,0.5)]"
+          ? "bg-black border-zinc-900 shadow-none" 
+          : "bg-zinc-950 border-zinc-800 shadow-[0_0_40px_rgba(0,0,0,0.8),inset_0_0_20px_rgba(0,0,0,1)]"
       )}>
         
-        {/* Header Info */}
-        <div className="flex justify-between items-start mb-6 md:mb-10">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-orange-500/50 uppercase tracking-widest">Vehicle Status</span>
-            <div className="flex items-center gap-2">
-              <div className={cn(
-                "w-2 h-2 rounded-full",
-                (isActive || isSimulating) ? "bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.8)]" : "bg-zinc-700",
-                !isEcoMode && (isActive || isSimulating) && "animate-pulse"
-              )} />
-              <span className={cn(
-                "text-[10px] md:text-xs font-bold",
-                (isActive || isSimulating) ? "text-green-500" : "text-zinc-600"
-              )}>
-                {isSimulating ? "SIMULATION" : isActive ? "ACTIVE" : "STANDBY"}
-              </span>
-            </div>
+        {/* Grid Background Overlay */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:20px_20px]" />
+
+        {/* Top Section: Tachometer Bar */}
+        <div className="relative w-full h-12 md:h-16 mb-4 border-b border-zinc-800/50 flex items-end pb-2">
+          <div className="absolute top-0 left-0 text-[8px] text-zinc-600 uppercase tracking-tighter">x1000 r/min</div>
+          <div className="flex w-full h-4 md:h-6 gap-[2px]">
+            {Array.from({ length: 40 }).map((_, i) => {
+              const isActiveBar = (i / 40) * 100 < rpmPercent;
+              const isRedline = i > 32;
+              return (
+                <div 
+                  key={i}
+                  className={cn(
+                    "flex-1 transition-all duration-150",
+                    isActiveBar 
+                      ? (isRedline ? "bg-orange-600 shadow-[0_0_8px_rgba(234,88,12,0.6)]" : "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)]")
+                      : "bg-zinc-900"
+                  )}
+                />
+              );
+            })}
           </div>
-          
-          <div className="flex gap-1 md:gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsSimulating(!isSimulating)}
-              className={cn(
-                "h-8 w-8 md:h-10 md:w-10 transition-colors",
-                isSimulating ? "text-blue-500 bg-blue-500/10" : "text-zinc-500 hover:text-blue-500 hover:bg-blue-500/10"
-              )}
-            >
-              <Beaker size={18} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsEcoMode(!isEcoMode)}
-              className={cn(
-                "h-8 w-8 md:h-10 md:w-10 transition-colors",
-                isEcoMode ? "text-green-500 bg-green-500/10" : "text-zinc-500 hover:text-green-500 hover:bg-green-500/10"
-              )}
-            >
-              <BatteryLow size={18} />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleToggleMute}
-              className="h-8 w-8 md:h-10 md:w-10 text-zinc-500 hover:text-orange-500 hover:bg-orange-500/10"
-            >
-              {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-            </Button>
+          <div className="absolute bottom-0 w-full flex justify-between px-1 text-[8px] text-zinc-700 font-bold">
+            <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span className="text-orange-900">7</span><span className="text-orange-900">8</span>
           </div>
         </div>
 
-        {/* Main Speed Display */}
-        <div className="flex-1 flex flex-col items-center justify-center relative">
-          {error && !isActive && !isSimulating && (
-            <div className="absolute top-0 text-[10px] text-red-500 bg-red-500/10 px-2 py-1 rounded border border-red-500/20">
-              GPS: {error}
+        {/* Middle Section: Speed & Indicators */}
+        <div className="flex-1 flex items-center justify-between px-4 md:px-10">
+          
+          {/* Left Side: Status Icons */}
+          <div className="flex flex-col gap-4">
+            <div className={cn("transition-colors", (isActive || isSimulating) ? "text-emerald-500" : "text-zinc-800")}>
+              <Navigation size={20} className={cn((isActive || isSimulating) && !isEcoMode && "animate-pulse")} />
             </div>
-          )}
-          
-          <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-orange-500/30 uppercase tracking-[0.5em]">
-            Velocity
-          </div>
-          
-          <div className="flex items-baseline gap-2">
-            <span className={cn(
-              "text-7xl sm:text-8xl md:text-9xl font-black tracking-tighter transition-all duration-200",
-              isChiming 
-                ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.5)]" 
-                : "text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.3)]",
-              isEcoMode && "drop-shadow-none"
-            )}>
-              {displaySpeed.toString().padStart(3, '0')}
-            </span>
-            <span className="text-lg md:text-xl font-bold text-zinc-500">km/h</span>
+            <div className={cn("transition-colors", isMuted ? "text-orange-500" : "text-zinc-800")}>
+              <VolumeX size={20} />
+            </div>
+            <div className={cn("transition-colors", isEcoMode ? "text-emerald-500" : "text-zinc-800")}>
+              <BatteryLow size={20} />
+            </div>
           </div>
 
-          {/* Speed Warning Indicator */}
-          {isChiming && (
-            <div className="mt-4 flex flex-col items-center gap-1">
-              <div className={cn("flex items-center gap-2 text-orange-500", !isEcoMode && "animate-bounce")}>
-                <AlertTriangle size={14} />
-                <span className="text-[10px] md:text-xs font-bold tracking-widest">SPEED LIMIT EXCEEDED</span>
+          {/* Center: Large Speed Display */}
+          <div className="flex flex-col items-center relative">
+            <div className="absolute -top-6 text-[10px] text-zinc-600 uppercase tracking-[0.4em] font-bold">Speedometer</div>
+            <div className="flex items-baseline">
+              <span className={cn(
+                "text-8xl md:text-9xl font-black tracking-tighter transition-all duration-100 tabular-nums",
+                isChiming 
+                  ? "text-orange-500 drop-shadow-[0_0_15px_rgba(249,115,22,0.4)]" 
+                  : "text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]",
+                isEcoMode && "drop-shadow-none"
+              )}>
+                {displaySpeed.toString().padStart(3, '0')}
+              </span>
+              <div className="flex flex-col ml-2">
+                <span className="text-xl md:text-2xl font-bold text-zinc-500 italic">km/h</span>
               </div>
             </div>
-          )}
+          </div>
+
+          {/* Right Side: Warning & Fuel (Decorative) */}
+          <div className="flex flex-col items-end gap-2">
+            <div className={cn(
+              "w-12 h-8 border flex items-center justify-center transition-all duration-300",
+              isChiming ? "border-orange-500 bg-orange-500/10 text-orange-500" : "border-zinc-800 text-zinc-900"
+            )}>
+              <AlertTriangle size={18} className={isChiming ? "animate-pulse" : ""} />
+            </div>
+            <div className="w-16 h-20 border border-zinc-800 p-1 flex flex-col justify-between">
+              <div className="text-[7px] text-zinc-600 text-center">FUEL</div>
+              <div className="flex-1 flex flex-col-reverse gap-[1px] mt-1">
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div key={i} className={cn("w-full h-full", i < 6 ? "bg-emerald-900/40" : "bg-zinc-900")} />
+                ))}
+              </div>
+              <div className="flex justify-between text-[6px] text-zinc-700 mt-1">
+                <span>E</span><span>F</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Bottom Stats */}
-        <div className="grid grid-cols-3 gap-2 md:gap-4 mt-6 md:mt-10 pt-6 border-t border-zinc-800/50">
-          <div className="flex flex-col items-center">
-            <span className="text-[8px] text-zinc-600 uppercase mb-1">Limit</span>
-            <span className="text-xs md:text-sm font-bold text-orange-500/80">100</span>
+        {/* Bottom Section: Model & Odo */}
+        <div className="mt-4 pt-2 border-t border-zinc-800/50 flex justify-between items-center px-2">
+          <div className="text-[9px] text-zinc-500 tracking-widest uppercase font-bold">
+            System: <span className="text-zinc-400">{isSimulating ? "SIM-MODE" : isActive ? "GPS-LINK" : "OFFLINE"}</span>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-[8px] text-zinc-600 uppercase mb-1">Model</span>
-            <span className="text-[9px] md:text-[10px] font-bold text-zinc-400 truncate w-full text-center">{model.split(' ')[0]}</span>
+          <div className="text-[10px] text-zinc-400 font-bold tracking-widest">
+            {model} <span className="text-zinc-600 ml-2">GT-S</span>
           </div>
-          <div className="flex flex-col items-center">
-            <span className="text-[8px] text-zinc-600 uppercase mb-1">GPS</span>
-            <Navigation size={12} className={cn((isActive || isSimulating) ? "text-green-500" : "text-zinc-700")} />
+          <div className="text-[9px] text-zinc-500 tracking-widest uppercase font-bold">
+            ODO: <span className="text-zinc-400">08610.1</span>
           </div>
         </div>
 
         {/* Scanline Effect */}
         {!isEcoMode && (
-          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%),linear-gradient(90deg,rgba(255,0,0,0.02),rgba(0,255,0,0.01),rgba(0,0,255,0.02))] bg-[length:100%_4px,3px_100%]" />
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%),linear-gradient(90deg,rgba(255,0,0,0.01),rgba(0,255,0,0.01),rgba(0,0,255,0.01))] bg-[length:100%_3px,2px_100%]" />
         )}
       </div>
 
-      {/* Controls */}
+      {/* Controls Section */}
       <div className={cn(
-        "mt-8 md:mt-12 flex flex-col items-center gap-6 md:gap-8 w-full max-w-xs transition-opacity duration-500",
+        "mt-10 flex flex-col items-center gap-8 w-full max-w-sm transition-opacity duration-500",
         isEcoMode ? "opacity-60" : "opacity-100"
       )}>
         
         {isSimulating ? (
-          <div className="w-full space-y-4 bg-zinc-900/50 p-5 md:p-6 rounded-2xl border border-blue-500/20">
+          <div className="w-full space-y-4 bg-zinc-900/40 p-6 rounded-sm border border-zinc-800">
             <div className="flex justify-between items-center">
-              <label className="text-[10px] text-blue-400 uppercase tracking-widest">Simulated Speed</label>
-              <span className="text-lg md:text-xl font-bold text-blue-400">{simSpeed} km/h</span>
+              <label className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Manual Override</label>
+              <span className="text-xl font-bold text-emerald-400 tabular-nums">{simSpeed} <span className="text-xs text-zinc-600">km/h</span></span>
             </div>
             <Slider 
               value={[simSpeed]} 
@@ -201,61 +197,87 @@ const AE86Dashboard = () => {
               step={1}
               className="py-4"
             />
-            <p className="text-[8px] md:text-[9px] text-zinc-500 text-center uppercase">
-              Test: Chime ON @ 100 | Chime OFF @ 95
-            </p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsSimulating(false)}
+              className="w-full border-zinc-800 text-zinc-500 hover:text-zinc-300 text-[10px] uppercase tracking-widest"
+            >
+              Exit Simulation
+            </Button>
           </div>
         ) : (
-          <>
-            {/* Engine Start/Stop Button */}
-            <div className="relative group">
-              {!isEcoMode && (
-                <div className={cn(
-                  "absolute -inset-4 rounded-full blur-xl transition-all duration-500 opacity-50",
-                  isActive ? "bg-red-500/40" : "bg-green-500/20 group-hover:bg-green-500/40"
-                )} />
-              )}
-              
+          <div className="flex flex-col gap-6 w-full">
+            {/* Ignition Button */}
+            <div className="flex justify-center">
               <button
                 onClick={isActive ? stopTracking : startTracking}
                 className={cn(
-                  "relative w-28 h-28 md:w-32 md:h-32 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-90 shadow-2xl",
+                  "group relative w-24 h-24 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-95",
                   isActive 
-                    ? "bg-zinc-900 border-red-600 text-red-500 shadow-[inset_0_0_20px_rgba(220,38,38,0.3)]" 
-                    : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-green-500 hover:text-green-500",
-                  isEcoMode && "shadow-none border-zinc-800"
+                    ? "bg-zinc-900 border-orange-600 text-orange-500 shadow-[0_0_20px_rgba(234,88,12,0.2)]" 
+                    : "bg-zinc-900 border-zinc-800 text-zinc-600 hover:border-emerald-500 hover:text-emerald-500"
                 )}
               >
-                <div className={cn(
-                  "absolute inset-1 rounded-full border border-white/5 pointer-events-none",
-                  isActive ? "bg-gradient-to-b from-red-500/10 to-transparent" : "bg-gradient-to-b from-white/5 to-transparent"
-                )} />
-                
-                <Power size={20} className={cn("mb-1 transition-colors md:size-6", isActive && !isEcoMode && "animate-pulse")} />
-                <span className="text-[9px] md:text-[10px] font-black tracking-tighter leading-none">ENGINE</span>
-                <span className="text-xs md:text-sm font-black tracking-widest leading-none">START</span>
-                <span className="text-[9px] md:text-[10px] font-black tracking-tighter leading-none">STOP</span>
+                <Power size={24} className={cn("mb-1", isActive && "animate-pulse")} />
+                <span className="text-[8px] font-black tracking-tighter uppercase">Ignition</span>
               </button>
             </div>
 
-            <div className="space-y-2 w-full">
-              <label className="text-[10px] text-zinc-500 uppercase tracking-widest ml-1">Vehicle Profile</label>
-              <Select onValueChange={setModel} defaultValue={model}>
-                <SelectTrigger className="bg-zinc-900 border-zinc-800 text-zinc-300 h-10 md:h-12 rounded-xl focus:ring-orange-500/50">
-                  <SelectValue placeholder="Select Model" />
-                </SelectTrigger>
-                <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-300">
-                  <SelectItem value="PEUGEOT 208">PEUGEOT 208</SelectItem>
-                  <SelectItem value="VOLKSWAGEN SHARAN">VW SHARAN</SelectItem>
-                </SelectContent>
-              </Select>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[9px] text-zinc-600 uppercase tracking-widest font-bold ml-1">Profile</label>
+                <Select onValueChange={setModel} defaultValue={model}>
+                  <SelectTrigger className="bg-zinc-950 border-zinc-800 text-zinc-400 h-10 rounded-sm text-[10px] uppercase tracking-widest focus:ring-emerald-500/50">
+                    <SelectValue placeholder="Model" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-zinc-950 border-zinc-800 text-zinc-400">
+                    <SelectItem value="PEUGEOT 208">208 GT</SelectItem>
+                    <SelectItem value="VOLKSWAGEN SHARAN">SHARAN</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex gap-2 items-end">
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => setIsSimulating(true)}
+                  className="flex-1 h-10 border-zinc-800 text-zinc-600 hover:text-emerald-500 hover:bg-emerald-500/5"
+                >
+                  <Beaker size={16} />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={() => setIsEcoMode(!isEcoMode)}
+                  className={cn("flex-1 h-10 border-zinc-800", isEcoMode ? "text-emerald-500" : "text-zinc-600")}
+                >
+                  <BatteryLow size={16} />
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="icon" 
+                  onClick={handleToggleMute}
+                  className="flex-1 h-10 border-zinc-800 text-zinc-600 hover:text-orange-500"
+                >
+                  {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                </Button>
+              </div>
             </div>
-          </>
+          </div>
         )}
         
-        <p className="text-[9px] md:text-[10px] text-zinc-500 text-center uppercase tracking-widest leading-relaxed opacity-50">
-          {isEcoMode ? "Eco Mode: UI Throttled & Dimmed" : "Standard Mode: Full Visuals"}
-        </p>
+        <div className="flex flex-col items-center gap-1 opacity-40">
+          <p className="text-[8px] text-zinc-600 uppercase tracking-[0.3em] font-bold">
+            Digital Instrument System v1.0
+          </p>
+          <div className="flex gap-4">
+            <div className="w-2 h-2 bg-emerald-900 rounded-full" />
+            <div className="w-2 h-2 bg-orange-900 rounded-full" />
+            <div className="w-2 h-2 bg-zinc-900 rounded-full" />
+          </div>
+        </div>
       </div>
     </div>
   );
