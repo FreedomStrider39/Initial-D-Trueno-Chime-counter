@@ -22,7 +22,6 @@ const AE86Dashboard = () => {
   
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
-  const [isEcoMode, setIsEcoMode] = useState(false);
   
   // Simulation State
   const [isSimulating, setIsSimulating] = useState(false);
@@ -63,12 +62,13 @@ const AE86Dashboard = () => {
   // Calculate Speed Arc Percent (0-140 km/h range)
   const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
 
-  // Helper to generate graduation ticks (Restored to previous "perfect" size)
-  const renderTicks = () => {
-    const ticks = [];
-    const totalTicks = 28;
-    const radius = 110;
-    const innerRadius = 102;
+  // Retro Gauge Graduations
+  const renderGraduations = () => {
+    const elements = [];
+    const totalTicks = 14; // Every 10 km/h
+    const radius = 115;
+    const innerRadius = 100;
+    const textRadius = 85;
     const centerX = 160;
     const centerY = 140;
 
@@ -79,185 +79,209 @@ const AE86Dashboard = () => {
       const x2 = centerX + Math.cos(angle) * innerRadius;
       const y2 = centerY + Math.sin(angle) * innerRadius;
       
-      const isMajor = i % 4 === 0;
-
-      ticks.push(
+      // Tick marks
+      elements.push(
         <line
-          key={i}
+          key={`tick-${i}`}
           x1={x1}
           y1={y1}
           x2={x2}
           y2={y2}
-          stroke={isMajor ? "#555" : "#222"}
-          strokeWidth={isMajor ? "2" : "1"}
+          stroke="#333"
+          strokeWidth="2"
         />
       );
+
+      // Numbers every 20 km/h
+      if (i % 2 === 0) {
+        const tx = centerX + Math.cos(angle) * textRadius;
+        const ty = centerY + Math.sin(angle) * textRadius;
+        elements.push(
+          <text
+            key={`text-${i}`}
+            x={tx}
+            y={ty}
+            fill="#222"
+            fontSize="8"
+            fontWeight="900"
+            textAnchor="middle"
+            alignmentBaseline="middle"
+            className="font-mono italic"
+          >
+            {i * 10}
+          </text>
+        );
+      }
     }
-    return ticks;
+    return elements;
   };
 
   return (
-    <div className={cn(
-      "flex flex-col items-center justify-center h-screen w-full transition-colors duration-1000 p-2 font-mono overflow-hidden",
-      isEcoMode ? "bg-black" : "bg-zinc-950"
-    )}>
-      {/* Compact Cluster Frame */}
-      <div className={cn(
-        "relative w-full max-w-md border-4 border-zinc-900 rounded-sm overflow-hidden flex flex-col p-3 transition-all duration-500 h-full max-h-[600px]",
-        isEcoMode ? "bg-black" : "bg-[#050505] shadow-[inset_0_0_40px_rgba(0,0,0,1)]"
-      )}>
+    <div className="flex flex-col items-center justify-center h-screen w-full bg-zinc-950 p-2 font-mono overflow-hidden">
+      {/* Main Cluster Housing */}
+      <div className="relative w-full max-w-md border-[6px] border-zinc-900 rounded-sm bg-[#080808] shadow-[0_0_50px_rgba(0,0,0,1),inset_0_0_30px_rgba(0,0,0,1)] flex flex-col p-4 h-full max-h-[620px]">
         
-        {/* CRT Scanline Effect */}
-        <div className="absolute inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.05)_50%)] bg-[length:100%_3px] opacity-20" />
+        {/* CRT Overlay */}
+        <div className="absolute inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-20" />
         
-        {/* Main Display Area */}
         <div className="relative flex-1 flex flex-col justify-between">
           
-          {/* Top: Speed Arc (Restored Size) */}
-          <div className="relative w-full h-44 flex flex-col items-center justify-center mt-2">
+          {/* Speedometer Section */}
+          <div className="relative w-full h-48 flex flex-col items-center justify-center">
             <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
-              {renderTicks()}
+              {renderGraduations()}
+              
+              {/* Background Track */}
               <path 
-                d="M 50 140 A 110 110 0 0 1 270 140" 
+                d="M 45 140 A 115 115 0 0 1 275 140" 
                 fill="none" 
                 stroke="#111" 
-                strokeWidth="12" 
+                strokeWidth="14" 
                 strokeLinecap="butt"
               />
+              
+              {/* Active Speed Bar */}
               <path 
-                d="M 50 140 A 110 110 0 0 1 270 140" 
+                d="M 45 140 A 115 115 0 0 1 275 140" 
                 fill="none" 
-                stroke={isChiming ? "#ea580c" : "#10b981"} 
-                strokeWidth="12" 
+                stroke={isChiming ? "#f97316" : "#00ffcc"} 
+                strokeWidth="14" 
                 strokeLinecap="butt"
-                strokeDasharray="345"
-                strokeDashoffset={345 - (speedPercent * 3.45)}
-                className="transition-all duration-200 ease-out"
-                style={{ filter: isChiming ? 'drop-shadow(0 0 10px #ea580c)' : 'drop-shadow(0 0 10px #10b981)' }}
+                strokeDasharray="361"
+                strokeDashoffset={361 - (speedPercent * 3.61)}
+                className="transition-all duration-300 ease-out"
+                style={{ filter: isChiming ? 'drop-shadow(0 0 12px #f97316)' : 'drop-shadow(0 0 12px #00ffcc)' }}
               />
             </svg>
 
-            {/* Speed Readout - Centered */}
-            <div className="flex flex-col items-center z-30 mt-4">
-              <div className="flex items-baseline">
+            {/* Digital Speed Readout */}
+            <div className="flex flex-col items-center z-30 mt-6">
+              <div className="flex items-baseline gap-1">
                 <span className={cn(
-                  "text-7xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
-                  isChiming ? "text-orange-500 drop-shadow-[0_0_15px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_15px_rgba(16,185,129,0.7)]"
+                  "text-8xl font-black tracking-tighter tabular-nums leading-none italic transition-all duration-150",
+                  isChiming ? "text-orange-500 drop-shadow-[0_0_20px_rgba(249,115,22,0.9)]" : "text-[#00ffcc] drop-shadow-[0_0_20px_rgba(0,255,204,0.8)]"
                 )}>
                   {displaySpeed}
                 </span>
-                <span className="text-[10px] font-black text-zinc-800 ml-1 italic uppercase">km/h</span>
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-black text-zinc-800 italic leading-none">KM/H</span>
+                  <span className="text-[8px] font-bold text-zinc-900 tracking-tighter">DIGITAL</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Middle: Info Row (Compact) */}
-          <div className="flex justify-between items-end px-4 -mt-2">
-            {/* Left: Temp & Trip (AE86 Style) */}
-            <div className="flex flex-col gap-1">
-              <div className="flex flex-col">
-                <span className="text-[7px] text-zinc-700 font-black uppercase tracking-widest">TEMP</span>
-                <span className="text-xl font-black text-[#10b981]/80 tabular-nums italic leading-none">
+          {/* Secondary Displays */}
+          <div className="flex justify-between items-end px-2 -mt-4">
+            {/* Left: VFD Style Temp & Trip */}
+            <div className="flex flex-col gap-3">
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[80px]">
+                <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">WATER TEMP</div>
+                <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
                   {temp !== null ? `${temp}°C` : '--°C'}
-                </span>
+                </div>
               </div>
-              <div className="flex flex-col mt-1">
-                <span className="text-[7px] text-zinc-700 font-black uppercase tracking-widest">TRIP</span>
-                <span className="text-xl font-black text-zinc-400 tabular-nums italic leading-none">
-                  {tripDistance.toFixed(1)}<span className="text-[8px] ml-0.5">km</span>
-                </span>
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[80px]">
+                <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">TRIP METER</div>
+                <div className="text-2xl font-black text-zinc-500 tabular-nums italic leading-none">
+                  {tripDistance.toFixed(1)}<span className="text-[10px] ml-1">km</span>
+                </div>
               </div>
             </div>
 
-            {/* Right: System Icons (Retro Style) */}
-            <div className="flex flex-col items-end gap-1">
-              <span className="text-[7px] text-zinc-700 font-black uppercase tracking-widest">SYSTEM</span>
-              <div className="flex gap-3">
-                <div className={cn("transition-colors", error ? "text-orange-600" : "text-zinc-900")}>
-                  <WifiOff size={18} />
-                </div>
-                <div className={cn("transition-colors", isChiming ? "text-orange-600 animate-pulse" : "text-zinc-900")}>
-                  <AlertTriangle size={18} />
-                </div>
-                <div className="text-zinc-900">
-                  <Zap size={18} />
-                </div>
+            {/* Right: Retro Warning Lights */}
+            <div className="grid grid-cols-2 gap-1">
+              <div className={cn(
+                "w-10 h-8 border flex items-center justify-center transition-all duration-300",
+                error ? "bg-orange-950/30 border-orange-500 text-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.4)]" : "bg-zinc-950 border-zinc-900 text-zinc-900"
+              )}>
+                <WifiOff size={16} strokeWidth={3} />
+              </div>
+              <div className={cn(
+                "w-10 h-8 border flex items-center justify-center transition-all duration-300",
+                isChiming ? "bg-orange-950/50 border-orange-600 text-orange-600 animate-pulse shadow-[0_0_15px_rgba(234,88,12,0.5)]" : "bg-zinc-950 border-zinc-900 text-zinc-900"
+              )}>
+                <AlertTriangle size={16} strokeWidth={3} />
+              </div>
+              <div className="w-10 h-8 border border-zinc-900 bg-zinc-950 flex items-center justify-center text-zinc-900">
+                <Zap size={16} strokeWidth={3} />
+              </div>
+              <div className="w-10 h-8 border border-zinc-900 bg-zinc-950 flex items-center justify-center text-zinc-900">
+                <Beaker size={16} strokeWidth={3} />
               </div>
             </div>
           </div>
 
-          {/* Bottom: Controls */}
-          <div className="mt-4 border-t border-zinc-900/50 pt-4 pb-2">
+          {/* Control Panel */}
+          <div className="mt-6 border-t-2 border-zinc-900 pt-6 pb-2">
             {isSimulating ? (
-              <div className="space-y-3 bg-zinc-900/20 p-3 rounded-sm">
+              <div className="space-y-4 bg-zinc-900/10 p-4 rounded-sm border border-zinc-900/50">
                 <div className="flex justify-between items-center">
-                  <label className="text-[8px] text-zinc-600 uppercase tracking-widest font-black">SIM SPEED</label>
-                  <span className="text-lg font-black text-[#10b981] tabular-nums">{simSpeed}</span>
+                  <label className="text-[9px] text-zinc-600 uppercase tracking-[0.3em] font-black">SIMULATION VELOCITY</label>
+                  <span className="text-xl font-black text-[#00ffcc] tabular-nums italic">{simSpeed}</span>
                 </div>
                 <Slider 
                   value={[simSpeed]} 
                   onValueChange={(val) => setSimSpeed(val[0])} 
                   max={140} 
                   step={1}
+                  className="py-2"
                 />
                 <Button 
                   variant="outline" 
-                  size="sm" 
                   onClick={() => setIsSimulating(false)}
-                  className="w-full border-zinc-800 text-zinc-600 text-[8px] uppercase tracking-widest font-black h-8"
+                  className="w-full border-zinc-800 bg-zinc-900/20 text-zinc-500 text-[9px] uppercase tracking-[0.4em] font-black h-10 hover:bg-zinc-800 hover:text-zinc-300"
                 >
-                  EXIT SIM
+                  TERMINATE SIM
                 </Button>
               </div>
             ) : (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-6">
                 <div className="flex justify-center">
                   <button
                     onClick={isActive ? stopTracking : startTracking}
                     className={cn(
-                      "group relative w-16 h-16 rounded-full border-2 flex flex-col items-center justify-center transition-all duration-300 active:scale-95 bg-[#111] shadow-lg",
+                      "group relative w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-90 bg-[#0a0a0a] shadow-2xl",
                       isActive 
-                        ? "border-orange-600 shadow-[0_0_15px_rgba(234,88,12,0.3)]" 
+                        ? "border-orange-600 shadow-[0_0_25px_rgba(234,88,12,0.4)]" 
                         : "border-zinc-800"
                     )}
                   >
-                    <Power size={24} className={cn("mb-0.5 transition-colors", isActive ? "text-orange-500" : "text-zinc-700")} />
+                    <Power size={28} className={cn("mb-1 transition-colors", isActive ? "text-orange-500" : "text-zinc-800")} />
                     <span className={cn(
-                      "text-[6px] font-black uppercase transition-colors",
-                      isActive ? "text-orange-500" : "text-zinc-700"
+                      "text-[7px] font-black uppercase tracking-widest transition-colors",
+                      isActive ? "text-orange-500" : "text-zinc-800"
                     )}>
                       IGNITION
                     </span>
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-3">
                   <Select onValueChange={setModel} defaultValue={model}>
-                    <SelectTrigger className="bg-zinc-950 border-zinc-900 text-zinc-600 h-10 rounded-sm text-[8px] uppercase tracking-widest font-black">
-                      <SelectValue placeholder="Model" />
+                    <SelectTrigger className="bg-zinc-950 border-zinc-900 text-zinc-600 h-12 rounded-sm text-[9px] uppercase tracking-[0.2em] font-black focus:ring-0">
+                      <SelectValue placeholder="VEHICLE" />
                     </SelectTrigger>
                     <SelectContent className="bg-zinc-950 border-zinc-900 text-zinc-500">
-                      <SelectItem value="PEUGEOT 208">208 GT</SelectItem>
-                      <SelectItem value="VOLKSWAGEN SHARAN">SHARAN</SelectItem>
+                      <SelectItem value="PEUGEOT 208">208 GT-APEX</SelectItem>
+                      <SelectItem value="VOLKSWAGEN SHARAN">SHARAN GTV</SelectItem>
                     </SelectContent>
                   </Select>
                   
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     <Button 
                       variant="secondary" 
-                      size="icon" 
                       onClick={() => setIsSimulating(true)}
-                      className="flex-1 h-10 bg-zinc-900/50 text-zinc-700 border border-zinc-900 rounded-sm"
+                      className="flex-1 h-12 bg-zinc-900/30 text-zinc-700 border border-zinc-900 rounded-sm hover:bg-zinc-800"
                     >
-                      <Beaker size={16} />
+                      <Beaker size={18} />
                     </Button>
                     <Button 
                       variant="secondary" 
-                      size="icon" 
                       onClick={handleToggleMute}
-                      className="flex-1 h-10 bg-zinc-900/50 text-zinc-700 border border-zinc-900 rounded-sm"
+                      className="flex-1 h-12 bg-zinc-900/30 text-zinc-700 border border-zinc-900 rounded-sm hover:bg-zinc-800"
                     >
-                      {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                      {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                     </Button>
                   </div>
                 </div>
@@ -265,13 +289,13 @@ const AE86Dashboard = () => {
             )}
           </div>
 
-          {/* Branding */}
-          <div className="flex justify-between items-center px-2 pb-1">
-            <div className="text-[8px] text-zinc-800 font-black tracking-widest italic">
-              {model} <span className="text-zinc-900 ml-1">GT-APEX</span>
+          {/* Footer Branding */}
+          <div className="flex justify-between items-center px-2 pt-4 border-t border-zinc-900/30">
+            <div className="text-[9px] text-zinc-800 font-black tracking-[0.2em] italic">
+              {model} <span className="text-zinc-900 ml-1">TWIN CAM 16</span>
             </div>
-            <div className="text-[8px] text-zinc-900 font-black tracking-widest">
-              TOYOTA MOTOR CORP.
+            <div className="text-[9px] text-zinc-900 font-black tracking-[0.3em]">
+              TOYOTA MOTOR
             </div>
           </div>
         </div>
