@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import driftImage from '@/assets/ae86-drift.png';
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -28,21 +29,27 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       isExiting ? "opacity-0 scale-[2] pointer-events-none" : "opacity-100 scale-100",
       isIgniting && !isExiting && "animate-[shake_0.4s_infinite]"
     )}>
-      {/* Video Background Container */}
+      {/* Video/Image Background Container */}
       <div className={cn(
         "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
         isIgniting ? "scale-150 blur-sm" : "scale-100"
       )}>
-        {/* Using a placeholder or ensuring the path is relative to public if not imported */}
+        {/* Fallback to image if video fails or is missing */}
+        <img 
+          src={driftImage} 
+          alt="AE86 Drift" 
+          className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale contrast-125"
+        />
         <video 
           autoPlay 
           muted 
           loop 
           playsInline
-          className="w-full h-full object-cover opacity-40 grayscale-[0.5] contrast-125"
+          className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale-[0.5] contrast-125"
         >
           <source src="intro-video.mp4" type="video/mp4" />
         </video>
+        
         {/* Overlay Gradients */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-80" />
         <div className="absolute inset-0 bg-zinc-950/20" />
