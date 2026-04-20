@@ -117,7 +117,7 @@ const AE86Dashboard = () => {
         <div className="absolute inset-0 pointer-events-none z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-30" />
         
         {/* Main Display Area */}
-        <div className="relative flex-1 flex flex-col border-2 border-zinc-800/30 p-4 md:p-6">
+        <div className="relative flex-1 flex flex-col p-4 md:p-6">
           
           {/* Top Section: Speed Arc & Readout */}
           <div className="relative w-full h-56 md:h-72 mb-8 flex flex-col items-center justify-center">
