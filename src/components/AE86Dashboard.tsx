@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Volume2, VolumeX, Power, Beaker, Zap, WifiOff } from 'lucide-react';
+import { AlertTriangle, Volume2, VolumeX, Power, Beaker, Zap, WifiOff, Radio } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
@@ -18,7 +18,7 @@ import {
 
 const AE86Dashboard = () => {
   const { speed: gpsSpeed, coords, isActive, isChiming: gpsIsChiming, error, tripDistance, startTracking, stopTracking } = useSpeedTracker(100, 95);
-  const { temp } = useWeather(coords?.latitude, coords?.longitude);
+  const { temp, station } = useWeather(coords?.latitude, coords?.longitude);
   
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
@@ -175,13 +175,19 @@ const AE86Dashboard = () => {
           <div className="flex justify-between items-end px-2 -mt-4">
             {/* Left: VFD Style Temp & Trip */}
             <div className="flex flex-col gap-3">
-              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[80px]">
-                <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">OAT TEMP</div>
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[100px]">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em]">OAT TEMP</div>
+                  <Radio size={8} className={cn("text-zinc-800", temp !== null && "text-orange-500 animate-pulse")} />
+                </div>
                 <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
                   {temp !== null ? `${temp}°C` : '--°C'}
                 </div>
+                <div className="text-[6px] text-zinc-800 font-bold mt-1 tracking-tighter truncate">
+                  {station}
+                </div>
               </div>
-              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[80px]">
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[100px]">
                 <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">TRIP METER</div>
                 <div className="text-2xl font-black text-zinc-500 tabular-nums italic leading-none">
                   {tripDistance.toFixed(1)}<span className="text-[10px] ml-1">km</span>
