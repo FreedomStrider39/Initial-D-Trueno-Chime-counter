@@ -222,14 +222,14 @@ const AE86Dashboard = () => {
                     className={cn(
                       "group relative w-20 h-20 rounded-full border-4 flex flex-col items-center justify-center transition-all duration-300 active:scale-90 bg-[#0a0a0a] shadow-2xl",
                       isActive 
-                        ? "border-[#00aa88] shadow-[0_0_25px_rgba(0,170,136,0.3)]" 
+                        ? "border-[#008877] shadow-[0_0_25px_rgba(0,136,119,0.2)]" 
                         : "border-zinc-800"
                     )}
                   >
-                    <Power size={28} className={cn("mb-1 transition-colors", isActive ? "text-[#00ccaa]" : "text-zinc-800")} />
+                    <Power size={28} className={cn("mb-1 transition-colors", isActive ? "text-[#00aa99]" : "text-zinc-800")} />
                     <span className={cn(
                       "text-[7px] font-black uppercase tracking-widest transition-colors",
-                      isActive ? "text-[#00ccaa]" : "text-zinc-800"
+                      isActive ? "text-[#00aa99]" : "text-zinc-800"
                     )}>
                       IGNITION
                     </span>
