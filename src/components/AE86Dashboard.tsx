@@ -139,7 +139,7 @@ const AE86Dashboard = () => {
               </text>
             </svg>
 
-            {/* Speed Electronic Display Box & Speed Arc */}
+            {/* Speed Electronic Display & Speed Arc */}
             <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 flex flex-col items-center">
               
               {/* Speed Arc SVG */}
@@ -185,19 +185,18 @@ const AE86Dashboard = () => {
                 })}
               </svg>
 
-              {/* Speed Box */}
-              <div className="bg-zinc-900/95 border-2 border-zinc-800 p-4 md:p-5 rounded-sm shadow-[0_0_30px_rgba(0,0,0,0.9),inset_0_0_20px_rgba(0,0,0,0.8)] min-w-[220px] flex flex-col items-center relative">
-                <div className="absolute top-1 left-2 text-[7px] text-zinc-600 font-black uppercase tracking-widest">SPEED</div>
+              {/* Speed Readout (No Box) */}
+              <div className="flex flex-col items-center mt-4">
                 <div className="flex items-baseline">
                   <span className={cn(
-                    "text-6xl md:text-7xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
+                    "text-7xl md:text-8xl font-black tracking-tighter transition-all duration-100 tabular-nums leading-none",
                     isChiming ? "text-orange-500 drop-shadow-[0_0_25px_rgba(249,115,22,0.8)]" : "text-[#10b981] drop-shadow-[0_0_25px_rgba(16,185,129,0.7)]"
                   )}>
                     {displaySpeed}
                   </span>
-                  <span className="text-lg md:text-xl font-black text-zinc-700 ml-2 italic">km/h</span>
+                  <span className="text-xl md:text-2xl font-black text-zinc-700 ml-2 italic">km/h</span>
                 </div>
-                <div className="mt-1 text-[7px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
+                <div className="mt-2 text-[8px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
               </div>
             </div>
           </div>
