@@ -67,6 +67,39 @@ const AE86Dashboard = () => {
   const displayTemp = temp ?? 20; 
   const tempPercent = Math.min(Math.max((displayTemp / 40) * 100, 0), 100);
 
+  // Helper to generate graduation ticks
+  const renderTicks = () => {
+    const ticks = [];
+    const totalTicks = 28; // Every 5 km/h up to 140
+    const radius = 125;
+    const innerRadius = 115;
+    const centerX = 160;
+    const centerY = 150;
+
+    for (let i = 0; i <= totalTicks; i++) {
+      const angle = Math.PI + (i / totalTicks) * Math.PI;
+      const x1 = centerX + Math.cos(angle) * radius;
+      const y1 = centerY + Math.sin(angle) * radius;
+      const x2 = centerX + Math.cos(angle) * innerRadius;
+      const y2 = centerY + Math.sin(angle) * innerRadius;
+      
+      const isMajor = i % 4 === 0; // Every 20 km/h
+
+      ticks.push(
+        <line
+          key={i}
+          x1={x1}
+          y1={y1}
+          x2={x2}
+          y2={y2}
+          stroke={isMajor ? "#444" : "#222"}
+          strokeWidth={isMajor ? "2" : "1"}
+        />
+      );
+    }
+    return ticks;
+  };
+
   return (
     <div className={cn(
       "flex flex-col items-center justify-center min-h-screen transition-colors duration-1000 p-4 md:p-8 font-mono",
@@ -89,33 +122,38 @@ const AE86Dashboard = () => {
           {/* Top Section: Speed Arc & Readout */}
           <div className="relative w-full h-56 md:h-72 mb-8 flex flex-col items-center justify-center">
             
-            {/* Speed Arc SVG - Adjusted for mobile fit */}
+            {/* Speed Arc SVG */}
             <svg width="320" height="160" viewBox="0 0 320 160" className="absolute top-0 overflow-visible">
-              {/* Background Arc */}
+              {/* Graduation Ticks */}
+              {renderTicks()}
+
+              {/* Background Arc - Slanted Endings using stroke-linecap="butt" */}
               <path 
-                d="M 40 150 A 120 120 0 0 1 280 150" 
+                d="M 35 150 A 125 125 0 0 1 285 150" 
                 fill="none" 
-                stroke="#1a1a1a" 
-                strokeWidth="12" 
-                strokeLinecap="round"
+                stroke="#111" 
+                strokeWidth="14" 
+                strokeLinecap="butt"
               />
+              
               {/* Active Speed Arc */}
               <path 
-                d="M 40 150 A 120 120 0 0 1 280 150" 
+                d="M 35 150 A 125 125 0 0 1 285 150" 
                 fill="none" 
                 stroke={isChiming ? "#ea580c" : "#10b981"} 
-                strokeWidth="12" 
-                strokeLinecap="round"
+                strokeWidth="14" 
+                strokeLinecap="butt"
                 strokeDasharray="400"
-                strokeDashoffset={400 - (speedPercent * 3.8)}
+                strokeDashoffset={400 - (speedPercent * 3.9)}
                 className="transition-all duration-200 ease-out"
                 style={{ filter: isChiming ? 'drop-shadow(0 0 15px #ea580c)' : 'drop-shadow(0 0 15px #10b981)' }}
               />
-              {/* Speed Scale Markers */}
+
+              {/* Speed Scale Numbers */}
               {[0, 20, 40, 60, 80, 100, 120, 140].map((val, i) => {
-                const angle = (i / 7) * Math.PI;
-                const x = 160 - Math.cos(angle) * 145;
-                const y = 150 - Math.sin(angle) * 145;
+                const angle = Math.PI + (i / 7) * Math.PI;
+                const x = 160 + Math.cos(angle) * 148;
+                const y = 150 + Math.sin(angle) * 148;
                 return (
                   <text 
                     key={val} 
@@ -123,8 +161,9 @@ const AE86Dashboard = () => {
                     y={y} 
                     fill="#333" 
                     fontSize="10" 
-                    fontWeight="bold" 
+                    fontWeight="900" 
                     textAnchor="middle"
+                    className="italic"
                   >
                     {val}
                   </text>
@@ -141,9 +180,9 @@ const AE86Dashboard = () => {
                 )}>
                   {displaySpeed}
                 </span>
-                <span className="text-lg md:text-2xl font-black text-zinc-700 ml-2 italic">km/h</span>
+                <span className="text-sm md:text-lg font-black text-zinc-800 ml-1 italic uppercase">km/h</span>
               </div>
-              <div className="mt-2 text-[8px] md:text-[10px] text-zinc-700 font-black tracking-[0.4em] uppercase">ELECTRONIC DISPLAY</div>
+              <div className="mt-1 text-[7px] md:text-[9px] text-zinc-800 font-black tracking-[0.5em] uppercase">DIGITAL SPEEDOMETER</div>
             </div>
           </div>
 
