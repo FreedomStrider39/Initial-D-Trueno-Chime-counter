@@ -29,36 +29,26 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       isExiting ? "opacity-0 scale-[2] pointer-events-none" : "opacity-100 scale-100",
       isIgniting && !isExiting && "animate-[shake_0.4s_infinite]"
     )}>
-      {/* Video/Image Background Container */}
+      {/* Background Image Container */}
       <div className={cn(
         "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
         isIgniting ? "scale-150 blur-sm" : "scale-100"
       )}>
-        {/* Fallback to image if video fails or is missing */}
         <img 
           src={driftImage} 
           alt="AE86 Drift" 
-          className="absolute inset-0 w-full h-full object-cover opacity-20 grayscale contrast-125"
+          className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2] contrast-125"
         />
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-40 grayscale-[0.5] contrast-125"
-        >
-          <source src="intro-video.mp4" type="video/mp4" />
-        </video>
         
-        {/* Overlay Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-80" />
-        <div className="absolute inset-0 bg-zinc-950/20" />
+        {/* Overlay Gradients for depth */}
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-90" />
+        <div className="absolute inset-0 bg-zinc-950/30" />
       </div>
       
       {/* White Flash Overlay */}
       <div className={cn(
         "absolute inset-0 bg-white z-50 pointer-events-none transition-opacity duration-300",
-        isIgniting ? "opacity-30" : "opacity-0"
+        isIgniting ? "opacity-40" : "opacity-0"
       )} />
 
       <div className={cn(
@@ -68,10 +58,10 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
         
         {/* Title Section */}
         <div className="text-center space-y-2 mb-12 md:mb-16">
-          <h1 className="text-zinc-400 text-[8px] md:text-[10px] tracking-[0.6em] md:tracking-[0.8em] uppercase font-mono drop-shadow-lg">
+          <h1 className="text-zinc-300 text-[10px] md:text-[12px] tracking-[0.6em] md:tracking-[0.8em] uppercase font-mono drop-shadow-2xl font-bold">
             Initial D / Speed Monitor
           </h1>
-          <h2 className="text-white text-4xl sm:text-5xl md:text-6xl font-black tracking-tighter font-mono italic drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+          <h2 className="text-white text-5xl sm:text-6xl md:text-7xl font-black tracking-tighter font-mono italic drop-shadow-[0_0_30px_rgba(255,255,255,0.4)]">
             AE86 <span className="text-orange-500">DRIFT</span>
           </h2>
         </div>
@@ -84,22 +74,22 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
         >
           <div className="relative">
             <div className={cn(
-              "absolute -inset-4 md:-inset-6 rounded-full blur-2xl transition-all duration-300",
-              isIgniting ? "bg-orange-500 opacity-100 scale-150" : "bg-orange-500/20 opacity-100 group-hover:bg-orange-500/40"
+              "absolute -inset-6 md:-inset-8 rounded-full blur-3xl transition-all duration-300",
+              isIgniting ? "bg-orange-500 opacity-100 scale-150" : "bg-orange-500/30 opacity-100 group-hover:bg-orange-500/50"
             )} />
             <div className={cn(
-              "relative w-20 h-20 md:w-24 md:h-24 rounded-full border-2 flex items-center justify-center bg-zinc-900/80 backdrop-blur-sm transition-all duration-300",
-              isIgniting ? "border-orange-500 scale-110" : "border-zinc-700 group-hover:border-orange-500/50"
+              "relative w-24 h-24 md:w-28 md:h-28 rounded-full border-2 flex items-center justify-center bg-zinc-900/90 backdrop-blur-md transition-all duration-300",
+              isIgniting ? "border-orange-500 scale-110" : "border-zinc-600 group-hover:border-orange-500/70"
             )}>
               <Power className={cn(
                 "transition-all duration-300",
-                isIgniting ? "text-orange-500 scale-125" : "text-zinc-500 group-hover:text-orange-500"
-              )} size={32} />
+                isIgniting ? "text-orange-500 scale-125" : "text-zinc-400 group-hover:text-orange-500"
+              )} size={40} />
             </div>
           </div>
           <span className={cn(
-            "text-[10px] md:text-[12px] font-mono tracking-[0.3em] uppercase transition-all duration-300 font-bold",
-            isIgniting ? "text-orange-500 translate-y-2" : "text-zinc-400 group-hover:text-white"
+            "text-[12px] md:text-[14px] font-mono tracking-[0.4em] uppercase transition-all duration-300 font-black",
+            isIgniting ? "text-orange-500 translate-y-2" : "text-zinc-300 group-hover:text-white"
           )}>
             {isIgniting ? "IGNITING..." : "Ignition"}
           </span>
@@ -107,19 +97,19 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       </div>
 
       {/* Bottom Branding */}
-      <div className="absolute bottom-8 md:bottom-12 text-[8px] md:text-[10px] text-zinc-600 font-mono tracking-[0.3em] md:tracking-[0.5em] uppercase text-center px-4">
+      <div className="absolute bottom-8 md:bottom-12 text-[10px] md:text-[12px] text-zinc-400 font-mono tracking-[0.4em] md:tracking-[0.6em] uppercase text-center px-4 font-bold">
         Fujiwara Tofu Shop (Private Use)
       </div>
 
       {/* Scanline Effect Overlay */}
-      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-20" />
+      <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] opacity-30" />
 
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes shake {
           0% { transform: translate(0, 0); }
-          25% { transform: translate(2px, -2px); }
-          50% { transform: translate(-2px, 2px); }
-          75% { transform: translate(2px, 2px); }
+          25% { transform: translate(3px, -3px); }
+          50% { transform: translate(-3px, 3px); }
+          75% { transform: translate(3px, 3px); }
           100% { transform: translate(0, 0); }
         }
       `}} />
