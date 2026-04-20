@@ -176,7 +176,7 @@ const AE86Dashboard = () => {
             {/* Left: VFD Style Temp & Trip */}
             <div className="flex flex-col gap-3">
               <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[80px]">
-                <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">WATER TEMP</div>
+                <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">OAT TEMP</div>
                 <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
                   {temp !== null ? `${temp}°C` : '--°C'}
                 </div>
