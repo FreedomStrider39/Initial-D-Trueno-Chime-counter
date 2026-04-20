@@ -184,7 +184,12 @@ const AE86Dashboard = () => {
             </div>
 
             <div className="ml-4 w-24">
-              <WarningLights isChiming={isChiming} hasError={!!error} />
+              <WarningLights 
+                isChiming={isChiming} 
+                hasError={!!error} 
+                isActive={isActive}
+                isMuted={isMuted}
+              />
             </div>
           </div>
 
