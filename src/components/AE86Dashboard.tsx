@@ -8,6 +8,7 @@ import { AlertTriangle, Volume2, VolumeX, Power, Beaker, Zap, WifiOff, Radio } f
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
+import DigitalClock from './DigitalClock';
 import {
   Select,
   SelectContent,
@@ -173,21 +174,24 @@ const AE86Dashboard = () => {
 
           {/* Secondary Displays */}
           <div className="flex justify-between items-end px-2 -mt-2">
-            {/* Left: VFD Style Temp & Trip */}
-            <div className="flex flex-col gap-3">
-              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[100px]">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em]">OAT TEMP</div>
-                  <Radio size={8} className={cn("text-zinc-800", temp !== null && "text-orange-500 animate-pulse")} />
+            {/* Left: VFD Style Temp, Clock & Trip */}
+            <div className="flex flex-col gap-3 w-full max-w-[240px]">
+              <div className="flex gap-2">
+                <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em]">OAT TEMP</div>
+                    <Radio size={8} className={cn("text-zinc-800", temp !== null && "text-orange-500 animate-pulse")} />
+                  </div>
+                  <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
+                    {temp !== null ? `${temp}°C` : '--°C'}
+                  </div>
+                  <div className="text-[6px] text-zinc-800 font-bold mt-1 tracking-tighter truncate">
+                    {station}
+                  </div>
                 </div>
-                <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
-                  {temp !== null ? `${temp}°C` : '--°C'}
-                </div>
-                <div className="text-[6px] text-zinc-800 font-bold mt-1 tracking-tighter truncate">
-                  {station}
-                </div>
+                <DigitalClock />
               </div>
-              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm min-w-[100px]">
+              <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm">
                 <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">TRIP METER</div>
                 <div className="text-2xl font-black text-zinc-500 tabular-nums italic leading-none">
                   {tripDistance.toFixed(1)}<span className="text-[10px] ml-1">km</span>
