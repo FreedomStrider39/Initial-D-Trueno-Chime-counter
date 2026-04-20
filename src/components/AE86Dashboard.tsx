@@ -18,7 +18,7 @@ import {
 const AE86Dashboard = () => {
   const { speed: gpsSpeed, isActive, isChiming: gpsIsChiming, error, startTracking, stopTracking } = useSpeedTracker(100, 95);
   
-  const [model, setModel] = useState("SPRINTER TRUENO AE86");
+  const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
   const [isEcoMode, setIsEcoMode] = useState(false);
   
@@ -245,7 +245,6 @@ const AE86Dashboard = () => {
                   <SelectValue placeholder="Select Model" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-900 border-zinc-800 text-zinc-300">
-                  <SelectItem value="SPRINTER TRUENO AE86">AE86 TRUENO</SelectItem>
                   <SelectItem value="PEUGEOT 208">PEUGEOT 208</SelectItem>
                   <SelectItem value="VOLKSWAGEN SHARAN">VW SHARAN</SelectItem>
                 </SelectContent>
