@@ -105,7 +105,7 @@ const AE86Dashboard = () => {
                 strokeLinecap="round"
               />
               
-              {/* Tachometer Active Segments (Simulated with dasharray) */}
+              {/* Tachometer Active Segments */}
               <path 
                 d="M 50 180 Q 150 50 400 50 Q 650 50 750 180" 
                 fill="none" 
@@ -143,8 +143,8 @@ const AE86Dashboard = () => {
               </text>
             </svg>
 
-            {/* Speed Electronic Display Box (Positioned inside the arc) */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/4 bg-zinc-900/60 border-4 border-zinc-800 p-4 md:p-6 rounded-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] min-w-[200px] flex flex-col items-center">
+            {/* Speed Electronic Display Box */}
+            <div className="absolute top-[60%] left-1/2 -translate-x-1/2 -translate-y-1/2 bg-zinc-900/80 border-2 border-zinc-800 p-4 md:p-6 rounded-sm shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] min-w-[220px] flex flex-col items-center z-20">
               <div className="absolute top-1 left-2 text-[8px] text-zinc-600 font-black uppercase tracking-widest">SPEED</div>
               <div className="flex items-baseline">
                 <span className={cn(
@@ -206,7 +206,7 @@ const AE86Dashboard = () => {
             </div>
           </div>
 
-          {/* Bottom: Warning Lights Row (Errors) */}
+          {/* Bottom: Warning Lights Row */}
           <div className="mt-6 flex justify-end gap-4 md:gap-8 border-t border-zinc-800/30 pt-4">
             <div className={cn("flex flex-col items-center gap-1 transition-colors", isChiming ? "text-orange-600" : "text-zinc-900")}>
               <AlertTriangle size={20} className={isChiming ? "animate-pulse" : ""} />
@@ -275,19 +275,24 @@ const AE86Dashboard = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-8 w-full">
-            {/* Ignition Button */}
+            {/* Ignition Button - Styled exactly as screenshot */}
             <div className="flex justify-center">
               <button
                 onClick={isActive ? stopTracking : startTracking}
                 className={cn(
-                  "group relative w-28 h-28 rounded-full border-[6px] flex flex-col items-center justify-center transition-all duration-300 active:scale-95 shadow-2xl",
+                  "group relative w-32 h-32 rounded-full border-[6px] flex flex-col items-center justify-center transition-all duration-300 active:scale-95 bg-[#1a1a1a] shadow-2xl",
                   isActive 
-                    ? "bg-zinc-900 border-orange-600 text-orange-500 shadow-[0_0_30px_rgba(234,88,12,0.3)]" 
-                    : "bg-zinc-900 border-zinc-800 text-zinc-600 hover:border-[#10b981] hover:text-[#10b981]"
+                    ? "border-orange-600 shadow-[0_0_40px_rgba(234,88,12,0.5)]" 
+                    : "border-zinc-800 hover:border-orange-600/50"
                 )}
               >
-                <Power size={32} className={cn("mb-1", isActive && "animate-pulse")} />
-                <span className="text-[10px] font-black tracking-tighter uppercase">Ignition</span>
+                <Power size={40} className={cn("mb-1 transition-colors", isActive ? "text-orange-500" : "text-zinc-600")} />
+                <span className={cn(
+                  "text-[10px] font-black tracking-tighter uppercase transition-colors",
+                  isActive ? "text-orange-500" : "text-zinc-600"
+                )}>
+                  Ignition
+                </span>
               </button>
             </div>
 
@@ -295,7 +300,7 @@ const AE86Dashboard = () => {
               <div className="space-y-2">
                 <label className="text-[10px] text-zinc-600 uppercase tracking-[0.3em] font-black ml-1">Vehicle Profile</label>
                 <Select onValueChange={setModel} defaultValue={model}>
-                  <SelectTrigger className="bg-zinc-950 border-zinc-800 text-zinc-400 h-12 rounded-sm text-[10px] uppercase tracking-widest focus:ring-[#10b981]/50 font-black">
+                  <SelectTrigger className="bg-zinc-950 border-zinc-800 text-zinc-400 h-14 rounded-sm text-[10px] uppercase tracking-widest focus:ring-orange-500/50 font-black">
                     <SelectValue placeholder="Model" />
                   </SelectTrigger>
                   <SelectContent className="bg-zinc-950 border-zinc-800 text-zinc-400">
@@ -307,28 +312,28 @@ const AE86Dashboard = () => {
               
               <div className="flex gap-3 items-end">
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   size="icon" 
                   onClick={() => setIsSimulating(true)}
-                  className="flex-1 h-12 border-zinc-800 text-zinc-600 hover:text-[#10b981] hover:bg-[#10b981]/5"
+                  className="flex-1 h-14 bg-white text-zinc-900 hover:bg-zinc-200 rounded-sm"
                 >
-                  <Beaker size={20} />
+                  <Beaker size={24} />
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   size="icon" 
                   onClick={() => setIsEcoMode(!isEcoMode)}
-                  className={cn("flex-1 h-12 border-zinc-800", isEcoMode ? "text-[#10b981]" : "text-zinc-600")}
+                  className="flex-1 h-14 bg-white text-zinc-900 hover:bg-zinc-200 rounded-sm"
                 >
-                  <BatteryLow size={20} />
+                  <BatteryLow size={24} />
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant="secondary" 
                   size="icon" 
                   onClick={handleToggleMute}
-                  className="flex-1 h-12 border-zinc-800 text-zinc-600 hover:text-orange-500"
+                  className="flex-1 h-14 bg-white text-zinc-900 hover:bg-zinc-200 rounded-sm"
                 >
-                  {isMuted ? <VolumeX size={20} /> : <Volume2 size={20} />}
+                  {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
                 </Button>
               </div>
             </div>
