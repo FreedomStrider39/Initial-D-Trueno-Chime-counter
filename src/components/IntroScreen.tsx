@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import introVideo from '@/assets/intro-video.mp4';
 import driftImage from '@/assets/ae86-drift.png';
 
 interface IntroScreenProps {
@@ -29,16 +30,21 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       isExiting ? "opacity-0 scale-[2] pointer-events-none" : "opacity-100 scale-100",
       isIgniting && !isExiting && "animate-[shake_0.4s_infinite]"
     )}>
-      {/* Background Image Container */}
+      {/* Background Video Container */}
       <div className={cn(
         "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
         isIgniting ? "scale-150 blur-sm" : "scale-100"
       )}>
-        <img 
-          src={driftImage} 
-          alt="AE86 Drift" 
+        <video 
+          autoPlay 
+          muted 
+          loop 
+          playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2] contrast-125"
-        />
+          poster={driftImage}
+        >
+          <source src={introVideo} type="video/mp4" />
+        </video>
         
         {/* Overlay Gradients for depth */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-90" />
