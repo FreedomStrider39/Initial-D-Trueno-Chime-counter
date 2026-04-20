@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import introVideo from '@/assets/intro-video.mp4';
-import driftImage from '@/assets/ae86-drift.png';
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -41,7 +40,6 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
           loop 
           playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2] contrast-125"
-          poster={driftImage}
         >
           <source src={introVideo} type="video/mp4" />
         </video>
@@ -87,34 +85,7 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
               "relative w-24 h-24 md:w-28 md:h-28 rounded-full border-2 flex items-center justify-center bg-zinc-900/90 backdrop-blur-md transition-all duration-300",
               isIgniting ? "border-orange-500 scale-110" : "border-zinc-600 group-hover:border-orange-500/70"
             )}>
-              <Power className={cnthink
-The previous response was cut off in the middle of a `dyad-write` block for `src/components/IntroScreen.tsx`. I need to complete that file and then check if any other files need updating based on the user's request to "remove AE86 drift. put Toyota speed chime app ro something".
-
-Looking at the previous partial output:
-```tsx
-              <Power className={cn
-```
-I need to finish the `IntroScreen.tsx` file and then check `AE86Dashboard.tsx` and `Index.tsx` for any remaining "AE86 Drift" or "AE86" branding that should be updated to "Toyota Speed Chime".
-
-Wait, the user specifically said "remove AE86 drift. put Toyota speed chime app ro something".
-In `IntroScreen.tsx`, I was changing:
-`AE86 DRIFT` -> `TOYOTA CHIME`
-`Initial D / Speed Monitor` -> `Retro Speed Warning System`
-
-I should also check `AE86Dashboard.tsx`. It has `model` state defaulting to `SPRINTER TRUENO AE86`. The user didn't explicitly say to change the car models, just the app branding.
-
-Let's finish `IntroScreen.tsx` first.
-
-Then I'll check `index.html` and `public/manifest.json` which also have "AE86" in them.
-
-Actually, the user's prompt was "remove AE86 drift. put Toyota speed chime app ro something".
-I will update:
-1. `src/components/IntroScreen.tsx` (finish it)
-2. `index.html` (title)
-3. `public/manifest.json` (name/short_name)
-4. `src/pages/Index.tsx` (maybe just check)
-
-Let's resume `IntroScreen.tsx`.(
+              <Power className={cn(
                 "transition-all duration-300",
                 isIgniting ? "text-orange-500 scale-125" : "text-zinc-400 group-hover:text-orange-500"
               )} size={40} />
