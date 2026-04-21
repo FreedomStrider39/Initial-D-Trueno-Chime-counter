@@ -48,7 +48,7 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
           playsInline
           className="absolute inset-0 w-full h-full object-cover opacity-40"
         >
-          <source src="/intro-bg.mp4" type="video/mp4" />
+          <source src="dyad-media://media/jade-turtle-hop/.dyad/media/dc64563f1ad13bb40d246dad4ae766c4.mp4" type="video/mp4" />
         </video>
         
         {/* Overlay Gradients for depth */}
