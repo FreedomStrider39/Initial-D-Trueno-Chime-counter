@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ae86-chime-v2';
+const CACHE_NAME = 'ae86-chime-' + self.registration.scope + Date.now();
 const ASSETS = [
   './',
   'index.html',
@@ -12,6 +12,21 @@ self.addEventListener('install', (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       return cache.addAll(ASSETS);
     })
+  );
+  // Force the new service worker to activate immediately
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+  // Delete all old caches that don't match current cache name
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
+      );
+    }).then(() => self.clients.claim())
   );
 });
 
