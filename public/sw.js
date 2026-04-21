@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ae86-dash-v2';
+const CACHE_NAME = 'ae86-dash-v3';
 const STATIC_ASSETS = [
   './',
   'index.html',
@@ -17,44 +17,62 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate event: Clean up old caches
+// Activate event: Clean up old caches immediately
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME)
-          .map((name) => caches.delete(name))
+        cacheNames.map((name) => {
+          if (name !== CACHE_NAME) {
+            return caches.delete(name);
+          }
+        })
       );
     })
   );
   self.clients.claim();
 });
 
-// Fetch event: Network first, then Cache for API; Cache first for assets
+// Fetch event: Smart strategy to prevent white screens
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // For API calls (Weather), try network first
+  // 1. Network Only for Weather API
   if (url.hostname.includes('open-meteo.com')) {
+    event.respondWith(fetch(request).catch(() => caches.match(request)));
+    return;
+  }
+
+  // 2. Network First for HTML and JS/CSS bundles
+  // This prevents the "white screen" caused by cached HTML pointing to old JS files
+  if (
+    request.mode === 'navigate' || 
+    url.pathname.endsWith('.js') || 
+    url.pathname.endsWith('.css')
+  ) {
     event.respondWith(
       fetch(request)
+        .then((response) => {
+          const copy = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+          return response;
+        })
         .catch(() => caches.match(request))
     );
     return;
   }
 
-  // For everything else (JS, CSS, Images, Audio), try cache first
+  // 3. Cache First for static assets (Audio, Images, Manifest)
   event.respondWith(
     caches.match(request).then((response) => {
       return response || fetch(request).then((networkResponse) => {
-        return caches.open(CACHE_NAME).then((cache) => {
-          // Don't cache media streams or external dyad-media directly if they fail
-          if (request.url.startsWith('http')) {
-            cache.put(request, networkResponse.clone());
-          }
-          return networkResponse;
-        });
+        // Only cache successful standard HTTP requests
+        if (networkResponse.status === 200 && url.protocol.startsWith('http')) {
+          const copy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+        }
+        return networkResponse;
       });
     })
   );
