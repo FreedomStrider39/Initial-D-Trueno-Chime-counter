@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import introVideo from '@/assets/intro-video.mp4';
 
 interface IntroScreenProps {
   onStart: () => void;
@@ -29,20 +28,13 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
       isExiting ? "opacity-0 scale-[2] pointer-events-none" : "opacity-100 scale-100",
       isIgniting && !isExiting && "animate-[shake_0.4s_infinite]"
     )}>
-      {/* Background Video Container */}
+      {/* Background Container with Retro Grid/Gradient */}
       <div className={cn(
         "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
         isIgniting ? "scale-150 blur-sm" : "scale-100"
       )}>
-        <video 
-          autoPlay 
-          muted 
-          loop 
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-60 grayscale-[0.2] contrast-125"
-        >
-          <source src={introVideo} type="video/mp4" />
-        </video>
+        {/* Retro Grid Effect */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20" />
         
         {/* Overlay Gradients for depth */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-90" />
