@@ -1,4 +1,5 @@
 "use client";
+
 class AE86Chime {
   private audio: HTMLAudioElement | null = null;
   private isPlaying: boolean = false;
@@ -35,9 +36,11 @@ class AE86Chime {
     }, this.INTERVAL_MS);
   }
 
+  // Hard stop — cuts audio immediately (used when turning off tracking)
   public stop() {
     if (!this.isPlaying) return;
     this.isPlaying = false;
+
     if (this.intervalId) {
       window.clearInterval(this.intervalId);
       this.intervalId = null;
@@ -45,6 +48,29 @@ class AE86Chime {
     if (this.audio) {
       this.audio.pause();
       this.audio.currentTime = 0;
+    }
+  }
+
+  // Graceful stop — lets the current chime finish before stopping
+  public stopGracefully() {
+    if (!this.isPlaying) return;
+    this.isPlaying = false;
+
+    // Clear the interval so no new chimes start
+    if (this.intervalId) {
+      window.clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+
+    // Let the currently playing chime finish naturally — don't pause
+    if (this.audio) {
+      this.audio.addEventListener(
+        'ended',
+        () => {
+          if (this.audio) this.audio.currentTime = 0;
+        },
+        { once: true }
+      );
     }
   }
 
