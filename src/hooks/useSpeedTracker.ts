@@ -3,6 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import { chime } from '@/utils/audio';
 import { showSuccess, showError } from '@/utils/toast';
 
+export type GpsStatus = 'idle' | 'searching' | 'poor' | 'locked';
+
+const SMOOTHING_WINDOW = 4; // Average over last 4 readings
+
 export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: number = 95) => {
   const [speed, setSpeed] = useState<number>(0);
   const [coords, setCoords] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -10,11 +14,13 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
   const [error, setError] = useState<string | null>(null);
   const [isChiming, setIsChiming] = useState<boolean>(false);
   const [tripDistance, setTripDistance] = useState<number>(0);
+  const [gpsStatus, setGpsStatus] = useState<GpsStatus>('idle');
 
   const watchId = useRef<number | null>(null);
   const lastUpdateRef = useRef<number>(0);
   const lastPositionRef = useRef<GeolocationCoordinates | null>(null);
-  const isChimingRef = useRef<boolean>(false); // Fix stale closure
+  const isChimingRef = useRef<boolean>(false);
+  const speedBufferRef = useRef<number[]>([]);
 
   const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
     const R = 6371;
@@ -28,6 +34,15 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     return R * c;
   };
 
+  const getSmoothedSpeed = (rawSpeed: number): number => {
+    speedBufferRef.current.push(rawSpeed);
+    if (speedBufferRef.current.length > SMOOTHING_WINDOW) {
+      speedBufferRef.current.shift();
+    }
+    const sum = speedBufferRef.current.reduce((a, b) => a + b, 0);
+    return Math.round(sum / speedBufferRef.current.length);
+  };
+
   const startTracking = () => {
     if (!navigator.geolocation) {
       showError("Geolocation is not supported");
@@ -35,6 +50,8 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     }
     setIsActive(true);
     setTripDistance(0);
+    setGpsStatus('searching');
+    speedBufferRef.current = [];
     lastPositionRef.current = null;
     isChimingRef.current = false;
     showSuccess("Takumi Mode Activated");
@@ -42,19 +59,24 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     watchId.current = navigator.geolocation.watchPosition(
       (position) => {
         const now = Date.now();
+        const accuracy = position.coords.accuracy;
 
-        // Skip low-accuracy readings (worse than 25 metres)
-        if (position.coords.accuracy > 25) return;
+        // Update GPS status and skip poor readings
+        if (accuracy <= 25) {
+          setGpsStatus('locked');
+        } else {
+          setGpsStatus('poor');
+          return;
+        }
 
-        const currentSpeedMs = position.coords.speed || 0;
-        const currentSpeedKmH = Math.round(currentSpeedMs * 3.6);
+        const rawSpeedKmH = (position.coords.speed || 0) * 3.6;
+        const smoothedSpeedKmH = getSmoothedSpeed(rawSpeedKmH);
 
         setCoords({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         });
 
-        // Trip distance calculation
         if (lastPositionRef.current) {
           const dist = calculateDistance(
             lastPositionRef.current.latitude,
@@ -68,34 +90,34 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
         }
         lastPositionRef.current = position.coords;
 
-        // Use ref to avoid stale closure bug
-        if (currentSpeedKmH >= thresholdKmH) {
+        // Chime logic via ref — no stale closure
+        if (smoothedSpeedKmH >= thresholdKmH) {
           if (!isChimingRef.current) {
             chime.start();
             isChimingRef.current = true;
             setIsChiming(true);
           }
-        } else if (currentSpeedKmH < hysteresisLow) {
+        } else if (smoothedSpeedKmH < hysteresisLow) {
           if (isChimingRef.current) {
-            chime.stop();
+            chime.stopGracefully(); // Let current chime finish naturally
             isChimingRef.current = false;
             setIsChiming(false);
           }
         }
 
-        // UI throttle to 500ms
         if (now - lastUpdateRef.current > 500) {
-          setSpeed(currentSpeedKmH);
+          setSpeed(smoothedSpeedKmH);
           lastUpdateRef.current = now;
         }
       },
       (err) => {
         setError(err.message);
+        setGpsStatus('poor');
         console.error("GPS Error:", err.message);
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 0,   // Always demand a fresh reading
+        maximumAge: 0,
         timeout: 10000,
       }
     );
@@ -109,8 +131,10 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     setIsActive(false);
     setSpeed(0);
     setCoords(null);
+    setGpsStatus('idle');
     isChimingRef.current = false;
     setIsChiming(false);
+    speedBufferRef.current = [];
     chime.stop();
     showSuccess("Takumi Mode Deactivated");
   };
@@ -124,5 +148,5 @@ export const useSpeedTracker = (thresholdKmH: number = 100, hysteresisLow: numbe
     };
   }, []);
 
-  return { speed, coords, isActive, isChiming, error, tripDistance, startTracking, stopTracking };
+  return { speed, coords, isActive, isChiming, error, tripDistance, gpsStatus, startTracking, stopTracking };
 };
