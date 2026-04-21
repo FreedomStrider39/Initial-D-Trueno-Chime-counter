@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/select";
 
 const AE86Dashboard = () => {
-  const { speed: gpsSpeed, coords, isActive, isChiming: gpsIsChiming, error, tripDistance, startTracking, stopTracking } = useSpeedTracker(100, 95);
+  const { speed: gpsSpeed, coords, isActive, isChiming: gpsIsChiming, error, tripDistance, gpsStatus, startTracking, stopTracking } = useSpeedTracker(100, 95);
   const { temp, station } = useWeather(coords?.latitude, coords?.longitude);
   
   const [model, setModel] = useState("PEUGEOT 208");
@@ -186,7 +186,7 @@ const AE86Dashboard = () => {
             <div className="ml-4 w-24">
               <WarningLights 
                 isChiming={isChiming} 
-                hasError={!!error} 
+                hasError={!!error || gpsStatus === 'poor' || gpsStatus === 'searching'}
                 isMuted={isMuted}
               />
             </div>
