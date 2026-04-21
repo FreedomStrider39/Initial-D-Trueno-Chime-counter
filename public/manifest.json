@@ -1,7 +1,7 @@
 {
   "name": "Toyota Speed Chime",
   "short_name": "Toyota Chime",
-  "description": "Retro Toyota Speed Warning System with AE86 Chime",
+  "description": "Retro Toyota Speed Warning System",
   "start_url": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -9,32 +9,16 @@
   "theme_color": "#09090b",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "placeholder.svg",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     },
     {
-      "src": "icon.png",
+      "src": "placeholder.svg",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Retro Dashboard Interface"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Retro Dashboard Interface"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ]
 }

@@ -1,10 +1,9 @@
-const CACHE_NAME = 'ae86-chime-v2';
+const CACHE_NAME = 'ae86-chime-v1';
 const ASSETS = [
   './',
   'index.html',
   'ae86_chime.mp3',
   'manifest.json',
-  'icon.png',
   'placeholder.svg'
 ];
 
