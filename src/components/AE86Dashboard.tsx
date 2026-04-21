@@ -26,7 +26,6 @@ const AE86Dashboard = () => {
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
   
-  // Simulation State
   const [isSimulating, setIsSimulating] = useState(false);
   const [simSpeed, setSimSpeed] = useState(0);
   const [simIsChiming, setSimIsChiming] = useState(false);
@@ -36,7 +35,6 @@ const AE86Dashboard = () => {
     setIsMuted(newMuteStatus);
   };
 
-  // Simulation Logic
   useEffect(() => {
     if (!isSimulating) {
       if (simIsChiming) {
@@ -61,11 +59,8 @@ const AE86Dashboard = () => {
 
   const displaySpeed = isSimulating ? simSpeed : gpsSpeed;
   const isChiming = isSimulating ? simIsChiming : gpsIsChiming;
-
-  // Calculate Speed Arc Percent (0-140 km/h range)
   const speedPercent = Math.min((displaySpeed / 140) * 100, 100);
 
-  // Retro Gauge Graduations
   const renderGraduations = () => {
     const elements = [];
     const totalTicks = 14;
@@ -170,7 +165,7 @@ const AE86Dashboard = () => {
                 <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1 flex flex-col justify-between">
                   <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">OAT TEMP</div>
                   <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
-                    {temp !== null ? `${temp}°C` : '--°C'}
+                    {temp !== null ? `${temp}°C` : 'N/A'}
                   </div>
                   <div className="text-[6px] text-zinc-800 font-bold mt-1 tracking-tighter truncate">
                     {station}

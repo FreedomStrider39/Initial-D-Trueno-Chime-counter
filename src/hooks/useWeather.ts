@@ -4,14 +4,17 @@ import { useState, useEffect } from 'react';
 
 export const useWeather = (lat?: number, lon?: number) => {
   const [temp, setTemp] = useState<number | null>(null);
-  const [station, setStation] = useState<string>("SEARCHING...");
+  const [station, setStation] = useState<string>("N/A");
 
   useEffect(() => {
-    if (lat === undefined || lon === undefined) return;
+    if (lat === undefined || lon === undefined) {
+      setStation("N/A");
+      return;
+    }
 
     const fetchWeather = async () => {
       try {
-        // Using Open-Meteo which aggregates data from global stations including Meteo France
+        setStation("CONNECTING...");
         const response = await fetch(
           `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
         );
@@ -19,15 +22,16 @@ export const useWeather = (lat?: number, lon?: number) => {
         if (data.current_weather) {
           setTemp(Math.round(data.current_weather.temperature));
           setStation("METEO-FRANCE / STN-086");
+        } else {
+          setStation("N/A");
         }
       } catch (error) {
         console.error("Weather fetch failed:", error);
-        setStation("STATION OFFLINE");
+        setStation("OFFLINE");
       }
     };
 
     fetchWeather();
-    // Update every 10 minutes
     const interval = setInterval(fetchWeather, 600000);
 
     return () => clearInterval(interval);

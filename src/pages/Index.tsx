@@ -10,16 +10,16 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-zinc-950 overflow-hidden">
-      {!hasStarted && (
+      {!hasStarted ? (
         <IntroScreen onStart={() => setHasStarted(true)} />
-      )}
-      
-      <div className={hasStarted ? "opacity-100 transition-opacity duration-1000" : "opacity-0"}>
-        <AE86Dashboard />
-        <div className="fixed bottom-0 w-full">
-          <MadeWithDyad />
+      ) : (
+        <div className="animate-in fade-in duration-1000">
+          <AE86Dashboard />
+          <div className="fixed bottom-0 w-full">
+            <MadeWithDyad />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
