@@ -5,27 +5,30 @@ class AE86Chime {
   private isPlaying: boolean = false;
   private isMuted: boolean = false;
   private intervalId: number | null = null;
-  private readonly INTERVAL_MS = 1360; // 1.36 seconds (approx 44 BPM)
+  private readonly INTERVAL_MS = 1360;
 
-  constructor() {
-    if (typeof window !== 'undefined') {
-      this.audio = new Audio('/ae86_chime.mp3');
-      // Set to ambient-like behavior for web
+  private getAudio(): HTMLAudioElement | null {
+    if (!this.audio && typeof window !== 'undefined') {
+      this.audio = new Audio('./ae86_chime.mp3');
       this.audio.preload = 'auto';
     }
+    return this.audio;
   }
 
   private playChime() {
-    if (!this.audio || this.isMuted) return;
-    this.audio.currentTime = 0;
-    this.audio.play().catch(err => {
+    const audio = this.getAudio();
+    if (!audio || this.isMuted) return;
+    audio.currentTime = 0;
+    audio.play().catch(err => {
       console.error("Audio playback failed:", err);
     });
   }
 
   public start() {
-    if (this.isPlaying || !this.audio) return;
-    
+    if (this.isPlaying) return;
+    const audio = this.getAudio();
+    if (!audio) return;
+
     this.isPlaying = true;
     this.playChime();
     this.intervalId = window.setInterval(() => {
@@ -33,18 +36,41 @@ class AE86Chime {
     }, this.INTERVAL_MS);
   }
 
+  // Hard stop — cuts audio immediately (used when turning off tracking)
   public stop() {
     if (!this.isPlaying) return;
-    
     this.isPlaying = false;
+
     if (this.intervalId) {
       window.clearInterval(this.intervalId);
       this.intervalId = null;
     }
-    
     if (this.audio) {
       this.audio.pause();
       this.audio.currentTime = 0;
+    }
+  }
+
+  // Graceful stop — lets the current chime finish before stopping
+  public stopGracefully() {
+    if (!this.isPlaying) return;
+    this.isPlaying = false;
+
+    // Clear the interval so no new chimes start
+    if (this.intervalId) {
+      window.clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+
+    // Let the currently playing chime finish naturally — don't pause
+    if (this.audio) {
+      this.audio.addEventListener(
+        'ended',
+        () => {
+          if (this.audio) this.audio.currentTime = 0;
+        },
+        { once: true }
+      );
     }
   }
 
