@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Power } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -11,6 +11,7 @@ interface IntroScreenProps {
 const IntroScreen = ({ onStart }: IntroScreenProps) => {
   const [isExiting, setIsExiting] = useState(false);
   const [isIgniting, setIsIgniting] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const handleStart = () => {
     setIsIgniting(true);
@@ -22,23 +23,40 @@ const IntroScreen = ({ onStart }: IntroScreenProps) => {
     }, 400);
   };
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = 0.8; // Slightly slower for more atmosphere
+    }
+  }, []);
+
   return (
     <div className={cn(
       "fixed inset-0 z-50 flex flex-col items-center justify-center bg-zinc-950 transition-all duration-1000 ease-in-out overflow-hidden",
       isExiting ? "opacity-0 scale-[2] pointer-events-none" : "opacity-100 scale-100",
       isIgniting && !isExiting && "animate-[shake_0.4s_infinite]"
     )}>
-      {/* Background Container with Retro Grid/Gradient */}
+      {/* Video Background Container */}
       <div className={cn(
         "absolute inset-0 w-full h-full overflow-hidden transition-transform duration-700 ease-in",
         isIgniting ? "scale-150 blur-sm" : "scale-100"
       )}>
-        {/* Retro Grid Effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20" />
+        <video
+          ref={videoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        >
+          <source src="/intro-bg.mp4" type="video/mp4" />
+        </video>
         
         {/* Overlay Gradients for depth */}
         <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-zinc-950 opacity-90" />
         <div className="absolute inset-0 bg-zinc-950/30" />
+        
+        {/* Retro Grid Effect */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-10" />
       </div>
       
       {/* White Flash Overlay */}
