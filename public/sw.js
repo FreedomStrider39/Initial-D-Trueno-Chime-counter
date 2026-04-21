@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ae86-chime-v1';
+const CACHE_NAME = 'ae86-chime-v2';
 const ASSETS = [
   './',
   'index.html',
