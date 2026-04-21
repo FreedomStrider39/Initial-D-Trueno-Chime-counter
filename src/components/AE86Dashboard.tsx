@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, Power, Beaker, WifiOff } from 'lucide-react';
+import { Volume2, VolumeX, Power, Beaker, WifiOff, Download } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
@@ -25,10 +25,33 @@ const AE86Dashboard = () => {
   
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   
   const [isSimulating, setIsSimulating] = useState(false);
   const [simSpeed, setSimSpeed] = useState(0);
   const [simIsChiming, setSimIsChiming] = useState(false);
+
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setDeferredPrompt(null);
+    }
+  };
 
   const handleToggleMute = () => {
     const newMuteStatus = chime.toggleMute();
@@ -272,8 +295,18 @@ const AE86Dashboard = () => {
             <div className="text-[9px] text-zinc-800 font-black tracking-[0.2em] italic">
               {model} <span className="text-zinc-900 ml-1">TWIN CAM 16</span>
             </div>
-            <div className="text-[9px] text-zinc-900 font-black tracking-[0.3em]">
-              TOYOTA MOTOR
+            <div className="flex items-center gap-4">
+              {deferredPrompt && (
+                <button 
+                  onClick={handleInstallClick}
+                  className="text-[9px] text-orange-500 font-black tracking-[0.3em] flex items-center gap-1 hover:text-orange-400 transition-colors"
+                >
+                  <Download size={10} /> INSTALL
+                </button>
+              )}
+              <div className="text-[9px] text-zinc-900 font-black tracking-[0.3em]">
+                TOYOTA MOTOR
+              </div>
             </div>
           </div>
         </div>
