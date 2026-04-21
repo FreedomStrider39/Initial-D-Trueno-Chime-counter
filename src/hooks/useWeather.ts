@@ -5,8 +5,30 @@ import { useState, useEffect } from 'react';
 export const useWeather = (lat?: number, lon?: number) => {
   const [temp, setTemp] = useState<number | null>(null);
   const [station, setStation] = useState<string>("N/A");
+  const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => {
+      setIsOnline(false);
+      setStation("OFFLINE");
+    };
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isOnline) {
+      setStation("OFFLINE");
+      return;
+    }
+
     if (lat === undefined || lon === undefined) {
       setStation("N/A");
       return;
@@ -35,7 +57,7 @@ export const useWeather = (lat?: number, lon?: number) => {
     const interval = setInterval(fetchWeather, 600000);
 
     return () => clearInterval(interval);
-  }, [lat, lon]);
+  }, [lat, lon, isOnline]);
 
-  return { temp, station };
+  return { temp, station, isOnline };
 };

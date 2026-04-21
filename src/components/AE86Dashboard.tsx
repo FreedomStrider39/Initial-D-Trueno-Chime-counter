@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useSpeedTracker } from '@/hooks/useSpeedTracker';
 import { useWeather } from '@/hooks/useWeather';
 import { Button } from '@/components/ui/button';
-import { Volume2, VolumeX, Power, Beaker } from 'lucide-react';
+import { Volume2, VolumeX, Power, Beaker, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { chime } from '@/utils/audio';
 import { Slider } from '@/components/ui/slider';
@@ -21,7 +21,7 @@ import {
 
 const AE86Dashboard = () => {
   const { speed: gpsSpeed, coords, isActive, isChiming: gpsIsChiming, error, tripDistance, startTracking, stopTracking } = useSpeedTracker(100, 95);
-  const { temp, station } = useWeather(coords?.latitude, coords?.longitude);
+  const { temp, station, isOnline } = useWeather(coords?.latitude, coords?.longitude);
   
   const [model, setModel] = useState("PEUGEOT 208");
   const [isMuted, setIsMuted] = useState(chime.getMuteStatus());
@@ -162,7 +162,12 @@ const AE86Dashboard = () => {
           <div className="flex justify-between items-stretch px-2 -mt-2 h-40">
             <div className="flex flex-col gap-3 flex-1 max-w-[220px]">
               <div className="flex gap-2 flex-1">
-                <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1 flex flex-col justify-between">
+                <div className="bg-zinc-950/50 p-2 border border-zinc-900 rounded-sm flex-1 flex flex-col justify-between relative overflow-hidden">
+                  {!isOnline && (
+                    <div className="absolute top-1 right-1">
+                      <WifiOff size={8} className="text-orange-500/50" />
+                    </div>
+                  )}
                   <div className="text-[7px] text-zinc-700 font-black uppercase tracking-[0.2em] mb-1">OAT TEMP</div>
                   <div className="text-2xl font-black text-[#00ffcc]/70 tabular-nums italic leading-none drop-shadow-[0_0_8px_rgba(0,255,204,0.4)]">
                     {temp !== null ? `${temp}°C` : 'N/A'}
